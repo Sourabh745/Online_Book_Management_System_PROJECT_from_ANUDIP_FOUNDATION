@@ -1,1 +1,9 @@
+Relationships
+Book → Author: A book is written by an author (many-to-one).
+Order → User: A user can place multiple orders (one-to-many).
+Order → OrderItem: An order contains multiple items (one-to-many).
+OrderItem → Book: Each order item is a specific book (many-to-one).
+Payment → Order: Each order has one payment (one-to-one).
+Review → User: A user can write multiple reviews (one-to-many).
+Review → Book: A book can have multiple reviews (one-to-many).
 
