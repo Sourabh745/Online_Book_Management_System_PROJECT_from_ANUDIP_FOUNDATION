@@ -3,6 +3,7 @@ package com.bookstore.books.dao.implementation;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
@@ -42,9 +43,11 @@ public class UserDAOImplementation implements UserDAO{
             query.setParameter("username", username);
             User user = query.uniqueResult();
 
-            if (user != null) {
+            if (user != null && user.getPassword().equals(password)) {
                     return user; // Successful login
                 }
+            }catch (Exception e) {
+                e.printStackTrace(); // Log the exception for debugging
             }
             return null;
 	}
@@ -52,8 +55,15 @@ public class UserDAOImplementation implements UserDAO{
 	@Override
 	public User getUserDetails(int userId) {
 		try (Session session = HibernateUtils.getSessionFactory().openSession()) {
-            return session.get(User.class, userId); // Fetch user by primary key (ID)
-        }
+	        User user = session.get(User.class, userId);
+
+	        if (user != null) {
+	            // Initialize the lazy collection manually
+	            Hibernate.initialize(user.getOrders()); // Initialize orders collection
+	        }
+
+	        return user;
+	    }
 	}
 
 	@SuppressWarnings("deprecation")

@@ -7,7 +7,7 @@ import com.bookstore.books.entities.Book;
 public interface BookDAO {
 	Book createBook(Book book);
 
-    public Book getBookById(int id);
+    public Book getBookById(int bookId);
 
     public List<Book> getAllBooks();
 

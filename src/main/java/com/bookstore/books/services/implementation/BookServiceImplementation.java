@@ -9,48 +9,39 @@ import com.bookstore.books.services.BookService;
 
 public class BookServiceImplementation implements BookService {
 
-	private BookDAO bookDAO;
-	
-	public BookServiceImplementation() {
-		super();
-		this.bookDAO = new BookDAOImplementation();
-		// TODO Auto-generated constructor stub
-	}
+    private BookDAO bookDAO;
 
-	@Override
-	public Book createBook(Book book) {
-		// TODO Auto-generated method stub
-		return bookDAO.createBook(book);
-	}
+    public BookServiceImplementation() {
+        this.bookDAO = new BookDAOImplementation();
+    }
 
-	@Override
-	public Book getBookById(int id) {
-		// TODO Auto-generated method stub
-		return bookDAO.getBookById(id);
-	}
+    @Override
+    public Book createBook(Book book) {
+        return bookDAO.createBook(book);
+    }
 
-	@Override
-	public List<Book> getAllBooks() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public Book getBookById(int bookId) {
+        return bookDAO.getBookById(bookId);
+    }
 
-	@Override
-	public Book updateBook(int id, Book updatedBook) {
-		// TODO Auto-generated method stub
-		return bookDAO.updateBook(id, updatedBook);
-	}
+    @Override
+    public List<Book> getAllBooks() {
+        return bookDAO.getAllBooks();
+    }
 
-	@Override
-	public boolean deleteBook(int id) {
-		// TODO Auto-generated method stub
-		return bookDAO.deleteBook(id);
-	}
+    @Override
+    public Book updateBook(int bookId, Book updatedBook) {
+        return bookDAO.updateBook(bookId, updatedBook);
+    }
 
-	@Override
-	public List<Book> findBooksByAuthor(int authorId) {
-		// TODO Auto-generated method stub
-		return bookDAO.findBooksByAuthor(authorId);
-	}
+    @Override
+    public boolean deleteBook(int bookId) {
+        return bookDAO.deleteBook(bookId);
+    }
 
+    @Override
+    public List<Book> findBooksByAuthor(int authorId) {
+        return bookDAO.findBooksByAuthor(authorId);
+    }
 }

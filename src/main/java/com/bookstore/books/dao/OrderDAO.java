@@ -24,4 +24,6 @@ public interface OrderDAO {
 
 	public Orders createOrder(User loggedInUser, List<OrderItems> orderItems, Payment payment, double totalCost,
 			String status);
+	
+	public Orders createOrder(User loggedInUser, List<OrderItems> orderItems, Payment payment);
 }

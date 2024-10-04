@@ -30,7 +30,7 @@ public class UserServiceImplementation implements UserService {
 	@Override
 	public User loginUser(String username, String password) {
 		// TODO Auto-generated method stub
-		return null;
+		return userDAO.loginUser(username, password);
 	}
 
 	@Override

@@ -1,83 +1,175 @@
 package com.bookstore.books.controllers;
 
 import java.util.List;
+import java.util.Scanner;
 
 import com.bookstore.books.entities.OrderItems;
 import com.bookstore.books.entities.Orders;
 import com.bookstore.books.entities.Payment;
 import com.bookstore.books.entities.Review;
 import com.bookstore.books.entities.User;
-import com.bookstore.books.services.*;
+import com.bookstore.books.services.UserService;
+import com.bookstore.books.services.implementation.OrderServiceImplementation;
+import com.bookstore.books.services.implementation.ReviewServiceImplementation;
+import com.bookstore.books.services.implementation.UserServiceImplementation;
+import com.bookstore.books.services.OrderService;
+import com.bookstore.books.services.ReviewService;
 
 public class UserController {
     private UserService userService;
     private OrderService orderService;
     private ReviewService reviewService;
+    private Scanner scanner;
 
     public UserController() {
-        this.userService = new UserService();   // Assuming services are initialized here
-        this.orderService = new OrderService();
-        this.reviewService = new ReviewService();
+        this.userService = new UserServiceImplementation();   // Assuming services are initialized here
+        this.orderService = new OrderServiceImplementation();
+        this.reviewService = new ReviewServiceImplementation();
+        this.scanner = new Scanner(System.in);
     }
 
-    // Registers a new user and returns the created User object
-    public User registerUser(User user) {
-        // TODO: Implement logic to register a new user
-        return userService.registerUser(user); // Assuming registerUser() returns the created User
+    // Registers a new user
+    public void registerUser() {
+        System.out.println("Enter Username:");
+        String username = scanner.nextLine();
+        System.out.println("Enter Password:");
+        String password = scanner.nextLine();
+        System.out.println("Enter Name:");
+        String name = scanner.nextLine();
+        System.out.println("Enter Email:");
+        String email = scanner.nextLine();
+        System.out.println("Enter Address:");
+        String address = scanner.nextLine();
+        System.out.println("Enter Phone:");
+        String phone = scanner.nextLine();
+
+        User newUser = new User(username, password, name, email, address, phone);
+        userService.registerUser(newUser);
+        System.out.println("User registered successfully.");
     }
 
-    // Allows a user to log in and returns the User object if successful
-    public User loginUser(String username, String password) {
-        // TODO: Implement login logic
-        return userService.loginUser(username, password); // Assuming loginUser() returns the logged-in User
+    // Logs in a user
+    public User loginUser() {
+        System.out.println("Enter Username:");
+        String username = scanner.nextLine();
+        System.out.println("Enter Password:");
+        String password = scanner.nextLine();
+        		
+        User user = userService.loginUser(username, password);
+        if (user != null) {
+            System.out.println("Login successful.");
+        } else {
+            System.out.println("Login failed.");
+        }
+        return user;
     }
 
     // Retrieves details of the logged-in user by their ID
-    public User getUserDetails(int userId) {
-        // TODO: Implement logic to fetch user details by ID
-        return userService.getUserById(userId); // Assuming getUserById() returns a User
+    public void getUserDetails(int userId) {
+        User user = userService.getUserDetails(userId);
+        if (user != null) {
+            System.out.println("User details: " + user);
+        } else {
+            System.out.println("User not found.");
+        }
     }
 
-    // Allows the logged-in user to update their own information and returns the updated User object
-    public User updateUser(int userId, User updatedUser) {
-        // TODO: Implement logic to update user information
-        return userService.updateUser(userId, updatedUser); // Assuming updateUser() returns the updated User
+    // Updates the logged-in user's information
+    public void updateUser(int userId) {
+        System.out.println("Enter new Name (leave blank to keep current):");
+        String name = scanner.nextLine();
+        System.out.println("Enter new Email (leave blank to keep current):");
+        String email = scanner.nextLine();
+        System.out.println("Enter new Address (leave blank to keep current):");
+        String address = scanner.nextLine();
+        System.out.println("Enter new Phone (leave blank to keep current):");
+        String phone = scanner.nextLine();
+
+        User updatedUser = userService.getUserDetails(userId);
+        if (updatedUser == null) {
+            System.out.println("User not found. Update aborted.");
+            return;
+        }
+
+        if (!name.isEmpty()) updatedUser.setName(name);
+        if (!email.isEmpty()) updatedUser.setEmail(email);
+        if (!address.isEmpty()) updatedUser.setAddress(address);
+        if (!phone.isEmpty()) updatedUser.setPhone(phone);
+
+        userService.updateUser(userId, updatedUser);
+        System.out.println("User updated successfully.");
     }
 
-    // Allows the user to delete their own account and returns a boolean indicating success or failure
+    // Deletes the user's account
     public boolean deleteAccount(int userId) {
-        // TODO: Implement logic to delete the user's account
-        return userService.deleteUser(userId); // Assuming deleteUser() returns a boolean
+        User user = userService.getUserDetails(userId);
+        if (user == null) {
+            System.out.println("User not found. Deletion aborted.");
+            return false;
+        }
+
+        userService.deleteAccount(userId);
+        System.out.println("User account deleted successfully.");
+        return true;
     }
 
-    // Displays the logged-in user’s past orders
-    public List<Order> viewOrderHistory(int userId) {
-        // TODO: Implement logic to fetch order history for the user
-        return orderService.getOrdersByUser(userId); // Assuming getOrdersByUser() returns a List of Order
+    // Displays the user's order history
+    public void viewOrderHistory(int userId) {
+        List<Orders> orders = orderService.getOrdersByUser(userId);
+        if (orders != null && !orders.isEmpty()) {
+            System.out.println("Order history:");
+            for (Orders order : orders) {
+                System.out.println(order);
+            }
+        } else {
+            System.out.println("No orders found.");
+        }
     }
 
-    // Allows the user to place a new order and returns the created Order object
-    public Orders placeOrder(User user, List<OrderItems> orderItems, Payment payment) {
-        // TODO: Implement logic to place an order
-        return orderService.createOrder(user, orderItems, payment); // Assuming createOrder() returns the created Order
+    // Places a new order
+    public void placeOrder(int userId, List<OrderItems> orderItems, Payment payment) {
+        User user = userService.getUserDetails(userId);
+        if (user == null) {
+            System.out.println("User not found. Unable to place order.");
+            return;
+        }
+
+        Orders newOrder = orderService.createOrder(user, orderItems, payment);
+        System.out.println("Order placed successfully: " + newOrder);
     }
 
-    // Allows the user to view details of a specific order they placed
-    public Orders viewOrderDetails(int orderId) {
-        // TODO: Implement logic to fetch order details
-        return orderService.getOrderById(orderId); // Assuming getOrderById() returns an Order
+    // Views details of a specific order
+    public void viewOrderDetails(int orderId) {
+        Orders order = orderService.getOrderById(orderId);
+        if (order != null) {
+            System.out.println("Order details: " + order);
+        } else {
+            System.out.println("Order not found.");
+        }
     }
 
-    // Allows the user to add a review for a book and returns the created Review object
-    public Review addReview(int bookId, User user, String reviewText, int rating) {
-        // TODO: Implement logic to add a review for a book
-        return reviewService.addReview(user, bookId, reviewText, rating); // Assuming addReview() returns the created Review
+    // Adds a review for a book
+    public void addReview(int bookId, int userId, String reviewText, int rating) {
+        User user = userService.getUserDetails(userId);
+        if (user == null) {
+            System.out.println("User not found. Unable to add review.");
+            return;
+        }
+
+        Review newReview = reviewService.createReview(user, bookId, reviewText, rating);
+        System.out.println("Review added successfully: " + newReview);
     }
 
     // Retrieves all reviews written by the user
-    public List<Review> getUserReviews(int userId) {
-        // TODO: Implement logic to fetch user reviews
-        return reviewService.getReviewsByUser(userId); // Assuming getReviewsByUser() returns a List of Review
+    public void getUserReviews(int userId) {
+        List<Review> reviews = reviewService.getReviewsByUser(userId);
+        if (reviews != null && !reviews.isEmpty()) {
+            System.out.println("User reviews:");
+            for (Review review : reviews) {
+                System.out.println(review);
+            }
+        } else {
+            System.out.println("No reviews found.");
+        }
     }
 }
-

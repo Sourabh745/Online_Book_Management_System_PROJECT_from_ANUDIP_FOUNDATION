@@ -26,7 +26,7 @@ public class HibernateUtils {
 			//setting user name of mysql
 			config.setProperty("hibernate.connection.username", "root");
 			//setting password of database
-			config.setProperty("hibernate.connection.password", "QWERTYUI");
+			config.setProperty("hibernate.connection.password", "qwertyu");
 			//setting how hibernate handles schema generation
 			// firstly it check table through entities then check in database
 			config.setProperty("hibernate.hbm2ddl.auto","update");

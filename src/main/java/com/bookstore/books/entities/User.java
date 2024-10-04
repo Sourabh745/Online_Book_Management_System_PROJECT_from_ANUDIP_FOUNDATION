@@ -30,7 +30,7 @@ public class User {
     @Column(name = "Phone", length = 20)
     private String phone;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Orders> orders;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
@@ -50,6 +50,14 @@ public class User {
 		this.reviews = reviews;
 	}
 
+	public User(String username, String password, String name, String email, String address, String phone) {
+        this.username = username;
+        this.password = password;
+        this.name = name;
+        this.email = email;
+        this.address = address;
+        this.phone = phone;
+    }
 	public User() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -133,6 +141,18 @@ public class User {
 				+ ", email=" + email + ", address=" + address + ", phone=" + phone + ", orders=" + orders + ", reviews="
 				+ reviews + "]";
 	}
+	
+    public String toString1() {
+        return "User{" +
+                "userID=" + userID +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", address='" + address + '\'' +
+                ", phone='" + phone + '\'' +
+                '}';
+    }
 
     // Getters and Setters
 }

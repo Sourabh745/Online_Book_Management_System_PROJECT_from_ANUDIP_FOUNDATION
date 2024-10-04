@@ -71,10 +71,7 @@ public class OrderDAOImplementation implements OrderDAO{
 	        List<OrderItems> orderItemsList = new ArrayList<>();
 	        while (true) {
 	            System.out.print("Enter book ID (or 0 to finish): ");
-	            int bookId = scanner.nextInt();
-	            if (bookId == 0) {
-	                break;  // Exit the loop if the user enters 0
-	            }
+	            String bookId = scanner.nextLine();
 
 	            // Fetch the book details (title, price, etc.)
 	            Book book = bookDAO.getBookById(bookId);  // You need a method like this in your BookService
@@ -97,9 +94,7 @@ public class OrderDAOImplementation implements OrderDAO{
 	                System.out.println("Book with ID " + bookId + " not found. Please try again.");
 	            }
 	        }
-	        return orderItemsList;
 	    }
-
 
 
 	@Override
@@ -253,6 +248,42 @@ public class OrderDAOImplementation implements OrderDAO{
 	        e.printStackTrace();
 	    }
 	    return isDeleted;  // Return true if the order was deleted, false otherwise
+	}
+
+	@Override
+	public Orders createOrder(User loggedInUser, List<OrderItems> orderItems, Payment payment) {
+		Transaction transaction = null;
+        Orders newOrder = null;
+        try (Session session = HibernateUtils.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            
+            // Create a new order
+            newOrder = new Orders();
+            newOrder.setUser(loggedInUser);  // Associate the order with the user
+            newOrder.setOrderItems(orderItems);
+            
+            // Set the payment(s)
+            payment.setOrder(newOrder);  // Associate the payment with the order
+            session.save(payment);  // Save the payment
+            
+            // Save the order first
+            session.save(newOrder);
+            
+            // Add all order items to the order
+            for (OrderItems item : orderItems) {
+                item.setOrder(newOrder);  // Associate each item with the order
+                session.save(item);  // Save each order item
+            }
+            
+            // Commit the transaction
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+        return newOrder; 
 	}
 
 

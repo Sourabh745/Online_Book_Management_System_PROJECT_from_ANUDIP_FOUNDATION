@@ -146,6 +146,7 @@ public class OrderController {
 
     // View Order by ID (for the logged-in user)
     public void viewOrderById() {
+    	loggedInUser.getUserID();
         if (loggedInUser == null) {
             System.out.println("You must be logged in to view your orders.");
             return;

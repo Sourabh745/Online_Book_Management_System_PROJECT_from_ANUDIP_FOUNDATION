@@ -36,27 +36,6 @@ public class BookDAOImplementation implements BookDAO{
 	}
 
 	@Override
-	public Book getBookById(int id) {
-		Transaction transaction = null;
-	    Book book = null;
-	    try (Session session = HibernateUtils.getSessionFactory().openSession()) {
-	        transaction = session.beginTransaction();
-	        
-	        // Retrieve the book by its ID
-	        book = session.get(Book.class, id);
-	        
-	        // Commit the transaction
-	        transaction.commit();
-	    } catch (Exception e) {
-	        if (transaction != null) {
-	            transaction.rollback();
-	        }
-	        e.printStackTrace();
-	    }
-	    return book;  // Return the retrieved book or null if not found
-	}
-
-	@Override
 	public List<Book> getAllBooks() {
 		Transaction transaction = null;
 	    List<Book> books = null;
@@ -76,6 +55,27 @@ public class BookDAOImplementation implements BookDAO{
 	        e.printStackTrace();
 	    }
 	    return books;  // Return the list of books
+	}
+	
+	@Override
+	public Book getBookById(int bookId) {
+		Transaction transaction = null;
+	    Book book = null;
+	    try (Session session = HibernateUtils.getSessionFactory().openSession()) {
+	        transaction = session.beginTransaction();
+	        
+	        // Retrieve the book by its ID
+	        book = session.get(Book.class, bookId);
+	        
+	        // Commit the transaction
+	        transaction.commit();
+	    } catch (Exception e) {
+	        if (transaction != null) {
+	            transaction.rollback();
+	        }
+	        e.printStackTrace();
+	    }
+	    return book;  // Return the retrieved book or null if not found
 	}
 
 	@Override
