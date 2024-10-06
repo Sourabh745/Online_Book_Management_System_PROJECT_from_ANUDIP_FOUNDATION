@@ -16,7 +16,7 @@ public class OrderItemController {
     }
 
     // Adds an item to an order and returns the created OrderItem object
-    public OrderItems addOrderItem(int orderId, int bookId, int quantity) {
+    public OrderItems addOrderItem(int orderId, String bookId, int quantity) {
         try {
             // Validate the inputs (orderId, bookId, and quantity)
             if (quantity <= 0) {

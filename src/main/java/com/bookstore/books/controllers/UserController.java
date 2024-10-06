@@ -72,6 +72,7 @@ public class UserController {
         } else {
             System.out.println("User not found.");
         }
+        return;
     }
 
     // Updates the logged-in user's information

@@ -65,4 +65,10 @@ public class OrderServiceImplementation implements OrderService{
 		return orderDAO.createOrder(loggedInUser, orderItems, payment, totalCost, status);
 	}
 
+	@Override
+	public Orders createOrders(User user, List<OrderItems> orderItems, Payment payment) {
+		// TODO Auto-generated method stub
+		return orderDAO.createOrder(user, orderItems, payment);
+	}
+
 }

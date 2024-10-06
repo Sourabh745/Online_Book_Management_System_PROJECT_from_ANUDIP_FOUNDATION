@@ -7,13 +7,13 @@ import com.bookstore.books.entities.Book;
 public interface BookDAO {
 	Book createBook(Book book);
 
-    public Book getBookById(int bookId);
+    public Book getBookById(String bookId);
 
     public List<Book> getAllBooks();
 
-    public Book updateBook(int id, Book updatedBook);
+    public Book updateBook(String id, Book updatedBook);
 
-    public boolean deleteBook(int id);
+    public boolean deleteBook(String id);
 
     public List<Book> findBooksByAuthor(int authorId);
 }

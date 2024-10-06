@@ -2,6 +2,7 @@ package com.bookstore.books.dao.implementation;
 
 import java.util.*;
 
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
@@ -25,76 +26,90 @@ public class OrderDAOImplementation implements OrderDAO{
 	        this.scanner = new Scanner(System.in);
 	    }
 	
-	    @SuppressWarnings("deprecation")
 	    @Override
 	    public Orders createOrder(User loggedInUser, List<OrderItems> orderItems, Payment payment, double totalCost, String status) {
 	        Transaction transaction = null;
 	        Orders newOrder = null;
 	        try (Session session = HibernateUtils.getSessionFactory().openSession()) {
 	            transaction = session.beginTransaction();
-	            
+
 	            // Create a new order
 	            newOrder = new Orders();
 	            newOrder.setUser(loggedInUser);  // Associate the order with the user
-	            newOrder.setOrderDate(new Date());  // Set the current date for the order
-	            newOrder.setTotalCost(totalCost);  // Set the total cost
-	            newOrder.setStatus(status);  // Set the status of the order
-	            
+	            newOrder.setTotalCost(totalCost);
+	            newOrder.setStatus(status);
+	            newOrder.setOrderDate(new Date());  // Set the current date
+
 	            // Set the payment(s)
 	            payment.setOrder(newOrder);  // Associate the payment with the order
-	            session.save(payment);  // Save the payment
-	            
+	            newOrder.addPayment(payment);
+
 	            // Save the order first
 	            session.save(newOrder);
-	            
+
 	            // Add all order items to the order
 	            for (OrderItems item : orderItems) {
 	                item.setOrder(newOrder);  // Associate each item with the order
 	                session.save(item);  // Save each order item
 	            }
-	            
+
 	            // Commit the transaction
 	            transaction.commit();
+	            return newOrder;  // Return the newly created order
 	        } catch (Exception e) {
-	            if (transaction != null) {
-	                transaction.rollback();
+	            if (transaction != null ) {
+	                transaction.rollback();  // Rollback on error
 	            }
 	            e.printStackTrace();
+	            throw new RuntimeException("Failed to create order: " + e.getMessage());
 	        }
-	        return newOrder;  // Return the newly created order
 	    }
+
 
 	
 	 @Override
-	    public List<OrderItems> collectOrderItems() {
-		 	Scanner scanner = new Scanner(System.in);
-	        List<OrderItems> orderItemsList = new ArrayList<>();
-	        while (true) {
-	            System.out.print("Enter book ID (or 0 to finish): ");
-	            String bookId = scanner.nextLine();
+	 public List<OrderItems> collectOrderItems() {
+		    Scanner scanner = new Scanner(System.in);
+		    List<OrderItems> orderItemsList = new ArrayList<>();
+		    boolean continueAdding = true;
 
-	            // Fetch the book details (title, price, etc.)
-	            Book book = bookDAO.getBookById(bookId);  // You need a method like this in your BookService
+		    while (continueAdding) {
+		        System.out.print("Enter book ID (or 0 to finish): ");
+		        String bookId = scanner.nextLine();
 
-	            if (book != null) {
-	                System.out.print("Enter quantity for " + book.getTitle() + ": ");
-	                int quantity = scanner.nextInt();
+		        if (bookId.equals("0")) {
+		            break;  // Exit if the user enters 0
+		        }
 
-	                // Create a new OrderItem
-	                OrderItems orderItem = new OrderItems();
-	                orderItem.setBook(book);
-	                orderItem.setQuantity(quantity);
-	                orderItem.setPrice(book.getPrice());  // Set the book price (could be fetched or calculated)
+		        // Fetch the book details
+		        Book book = bookDAO.getBookById(bookId);  // You need a method like this in your BookService
 
-	                // Add the order item to the list
-	                orderItemsList.add(orderItem);
+		        if (book != null) {
+		        	
+		            // Create a new OrderItem
+		            OrderItems orderItem = new OrderItems();
+		            orderItem.setBook(book);
+		            orderItem.setPrice(book.getPrice());  // Set the book price
 
-	                System.out.println("Added " + quantity + " of " + book.getTitle() + " to your order.");
-	            } else {
-	                System.out.println("Book with ID " + bookId + " not found. Please try again.");
-	            }
-	        }
-	    }
+		            // Add the order item to the list
+		            orderItemsList.add(orderItem);
+
+		            System.out.println("Added " + book.getTitle() + " to your order.");
+		        } else {
+		            System.out.println("Book with ID " + bookId + " not found. Please try again.");
+		        }
+
+		        // Ask if the user wants to continue
+		        System.out.print("Do you want to add another item? (yes/no): ");
+		        String response = scanner.nextLine();
+		        if (!response.equalsIgnoreCase("yes")) {
+		            continueAdding = false;
+		        }
+		    }
+		    
+		    return orderItemsList;
+		}
+
 
 
 	@Override
@@ -109,13 +124,15 @@ public class OrderDAOImplementation implements OrderDAO{
 	        
 	        // Commit the transaction
 	        transaction.commit();
+	        return order;  // Return the retrieved order
 	    } catch (Exception e) {
 	        if (transaction != null) {
 	            transaction.rollback();
 	        }
 	        e.printStackTrace();
+	        throw new RuntimeException("Failed to update  in order: " + e.getMessage());
+
 	    }
-	    return order;  // Return the retrieved order
 	}
 
 
@@ -132,13 +149,14 @@ public class OrderDAOImplementation implements OrderDAO{
 	        
 	        // Commit the transaction
 	        transaction.commit();
+	        return orders;  // Return the list of all orders
 	    } catch (Exception e) {
 	        if (transaction != null) {
 	            transaction.rollback();
 	        }
 	        e.printStackTrace();
+	        throw new RuntimeException("Failed to get all user  in order: " + e.getMessage());
 	    }
-	    return orders;  // Return the list of all orders
 	}
 
 
@@ -156,13 +174,14 @@ public class OrderDAOImplementation implements OrderDAO{
 	        
 	        // Commit the transaction
 	        transaction.commit();
+	        return orders;  // Return the list of orders by user
 	    } catch (Exception e) {
 	        if (transaction != null) {
 	            transaction.rollback();
 	        }
 	        e.printStackTrace();
+	        throw new RuntimeException("Failed to get  in order: " + e.getMessage());
 	    }
-	    return orders;  // Return the list of orders by user
 	}
 
 
@@ -204,6 +223,7 @@ public class OrderDAOImplementation implements OrderDAO{
 	            
 	            // Commit the transaction
 	            transaction.commit();
+	            return order;  // Return the updated order
 	        } else {
 	            System.out.println("Order not found.");
 	        }
@@ -212,8 +232,10 @@ public class OrderDAOImplementation implements OrderDAO{
 	            transaction.rollback();
 	        }
 	        e.printStackTrace();
+	        throw new RuntimeException("Failed to update  in order: " + e.getMessage());
 	    }
-	    return order;  // Return the updated order
+        return order;  // Return the updated order
+
 	}
 
 
@@ -241,17 +263,19 @@ public class OrderDAOImplementation implements OrderDAO{
 	        
 	        // Commit the transaction
 	        transaction.commit();
+	        return isDeleted;  // Return true if the order was deleted, false otherwise
 	    } catch (Exception e) {
 	        if (transaction != null) {
 	            transaction.rollback();
 	        }
 	        e.printStackTrace();
+	        throw new RuntimeException("Failed to delete item in order: " + e.getMessage());
+
 	    }
-	    return isDeleted;  // Return true if the order was deleted, false otherwise
 	}
 
 	@Override
-	public Orders createOrder(User loggedInUser, List<OrderItems> orderItems, Payment payment) {
+	public Orders createOrders(User loggedInUser, List<OrderItems> orderItems, Payment payment) {
 		Transaction transaction = null;
         Orders newOrder = null;
         try (Session session = HibernateUtils.getSessionFactory().openSession()) {
@@ -277,13 +301,15 @@ public class OrderDAOImplementation implements OrderDAO{
             
             // Commit the transaction
             transaction.commit();
+            return newOrder; 
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
             }
             e.printStackTrace();
+	        throw new RuntimeException("Failed to create item in order: " + e.getMessage());
+
         }
-        return newOrder; 
 	}
 
 

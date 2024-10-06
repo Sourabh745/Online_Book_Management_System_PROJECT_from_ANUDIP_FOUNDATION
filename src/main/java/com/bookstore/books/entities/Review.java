@@ -12,7 +12,7 @@ public class Review {
     private int reviewID;
 
     @ManyToOne
-    @JoinColumn(name = "ISBN", nullable = false)
+    @JoinColumn(name = "BookID", nullable = false)
     private Book book;
 
     @ManyToOne

@@ -15,7 +15,7 @@ import com.bookstore.books.utils.HibernateUtils;
 public class OrderItemDAOImplementation implements OrderItemDAO{
 
 	@Override
-	public OrderItems addOrderItem(int orderId, int bookId, int quantity) {
+	public OrderItems addOrderItem(int orderId, String bookId, int quantity) {
 	    Transaction transaction = null;
 	    OrderItems newOrderItem = null;
 	    try (Session session = HibernateUtils.getSessionFactory().openSession()) {
@@ -37,20 +37,22 @@ public class OrderItemDAOImplementation implements OrderItemDAO{
 	        newOrderItem = new OrderItems();
 	        newOrderItem.setOrder(order);
 	        newOrderItem.setBook(book);
-	        newOrderItem.setQuantity(quantity);
+	       // newOrderItem.setQuantity(quantity);
 	        
 	        // Save the new order item
 	        session.save(newOrderItem);
 	        
 	        // Commit the transaction
 	        transaction.commit();
+	        return newOrderItem;  // Return the newly added order item
 	    } catch (Exception e) {
 	        if (transaction != null) {
 	            transaction.rollback();
 	        }
 	        e.printStackTrace();
+	        throw new RuntimeException("Failed to add item in order: " + e.getMessage());
+
 	    }
-	    return newOrderItem;  // Return the newly added order item
 	}
 
 

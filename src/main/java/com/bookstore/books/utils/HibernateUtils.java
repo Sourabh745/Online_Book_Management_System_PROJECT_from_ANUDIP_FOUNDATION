@@ -26,7 +26,7 @@ public class HibernateUtils {
 			//setting user name of mysql
 			config.setProperty("hibernate.connection.username", "root");
 			//setting password of database
-			config.setProperty("hibernate.connection.password", "qwertyu");
+			config.setProperty("hibernate.connection.password", "S@ndw1ch");
 			//setting how hibernate handles schema generation
 			// firstly it check table through entities then check in database
 			config.setProperty("hibernate.hbm2ddl.auto","update");
@@ -43,6 +43,7 @@ public class HibernateUtils {
 			config.addAnnotatedClass(User.class);
 			config.addAnnotatedClass(Review.class);
 			config.addAnnotatedClass(Payment.class);
+			
 			
 			//=========================================
 			//=====creating serviceRegistry class object to register the configuration
@@ -61,4 +62,10 @@ public class HibernateUtils {
 		public static SessionFactory getSessionFactory() {
 			return sessionFactory;
 		}
+		
+		  public static void shutdown() {
+		        if (sessionFactory != null) {
+		            sessionFactory.close();
+		        }
+		    }
 	}

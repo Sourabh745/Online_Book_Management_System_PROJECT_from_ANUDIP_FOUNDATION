@@ -15,6 +15,7 @@ import com.bookstore.books.services.implementation.UserServiceImplementation;
 public class OrderController {
     private OrderService orderService;
     private UserService userService;
+    private UserController userController;
     private Scanner scanner;
     private User loggedInUser;
 
@@ -25,12 +26,15 @@ public class OrderController {
         this.loggedInUser = null;  // No user logged in initially
     }
 
-    public void showMenu() {
+    public void showMenu(User loggedInUser) {
+    	this.loggedInUser = loggedInUser; // Set logged-in user
+        
         while (true) {
-            if (loggedInUser == null) {
+            if (this.loggedInUser == null) {
                 System.out.println("You need to login first.");
-                login();
-            } else {
+                userController.loginUser(); // After login, set the loggedInUser
+                this.loggedInUser = userController.loginUser();  // Assuming this method returns the logged-in user
+            }  else {
                 System.out.println("Order Menu:");
                 System.out.println("1. Create Order");
                 System.out.println("2. View All Orders");
@@ -46,7 +50,7 @@ public class OrderController {
 
                 switch (choice) {
                     case 1:
-                        createOrder();
+                        createOrder(loggedInUser);
                         break;
                     case 2:
                         viewAllOrders();
@@ -73,21 +77,21 @@ public class OrderController {
         }
     }
 
-    // Login method to allow users to log in
-    private void login() {
-        System.out.print("Enter username: ");
-        String username = scanner.nextLine();
-        System.out.print("Enter password: ");
-        String password = scanner.nextLine();
-
-        loggedInUser = userService.authenticateUser(username, password);
-
-        if (loggedInUser != null) {
-            System.out.println("Login successful! Welcome " + loggedInUser.getUsername());
-        } else {
-            System.out.println("Invalid credentials. Please try again.");
-        }
-    }
+//    // Login method to allow users to log in
+//    private void login() {
+//        System.out.print("Enter username: ");
+//        String username = scanner.nextLine();
+//        System.out.print("Enter password: ");
+//        String password = scanner.nextLine();
+//
+//        loggedInUser = userService.authenticateUser(username, password);
+//
+//        if (loggedInUser != null) {
+//            System.out.println("Login successful! Welcome " + loggedInUser.getUsername());
+//        } else {
+//            System.out.println("Invalid credentials. Please try again.");
+//        }
+//    }
 
     // Logout method to log out the user
     private void logout() {
@@ -96,7 +100,7 @@ public class OrderController {
     }
 
     // Create Order
-    public void createOrder() {
+    public void createOrder(User loggedInUser) {
         if (loggedInUser == null) {
             System.out.println("You must be logged in to create an order.");
             return;
@@ -104,20 +108,23 @@ public class OrderController {
 
         System.out.print("Enter payment method (e.g., Credit Card): ");
         String payMethod = scanner.nextLine();
-        Payment payment = new Payment();
-        payment.setPaymentMethod(payMethod);
+        Payment payments = new Payment();
+        payments.setPaymentMethod(payMethod);
 
         System.out.println("Enter order items (Enter 0 to stop):");
         List<OrderItems> orderItems = orderService.collectOrderItems();  // Collect order items from the user
 
+        System.out.println("1");
         // Calculate total cost
-        double totalCost = orderItems.stream().mapToDouble(item -> item.getPrice() * item.getQuantity()).sum();
+        double totalCost = orderItems.stream().mapToDouble(item -> item.getPrice()).sum();
 
         // Set order status (initially pending)
         String status = "Pending";
+        System.out.println("2");
 
         // Create the order
-        Orders newOrder = orderService.createOrder(loggedInUser, orderItems, payment, totalCost, status);
+        Orders newOrder = orderService.createOrder(loggedInUser, orderItems, payments, totalCost, status);
+        System.out.println("3");
 
         if (newOrder != null) {
             System.out.println("Order created successfully: " + newOrder);
@@ -125,10 +132,11 @@ public class OrderController {
             System.out.println("Failed to create order.");
         }
     }
+    
 
     // View All Orders (for the logged-in user)
     public void viewAllOrders() {
-        if (loggedInUser == null) {
+        if (loggedInUser.getUsername() == "admin") {
             System.out.println("You must be logged in to view your orders.");
             return;
         }
@@ -146,7 +154,6 @@ public class OrderController {
 
     // View Order by ID (for the logged-in user)
     public void viewOrderById() {
-    	loggedInUser.getUserID();
         if (loggedInUser == null) {
             System.out.println("You must be logged in to view your orders.");
             return;
@@ -157,12 +164,14 @@ public class OrderController {
         scanner.nextLine();  // Consume newline
 
         Orders order = orderService.getOrderById(orderId);
+
         if (order != null && order.getUser().getUserID() == loggedInUser.getUserID()) {
             System.out.println("Order details: " + order);
         } else {
             System.out.println("Order not found or you don't have permission to view this order.");
         }
     }
+
 
     // Update Order (for the logged-in user)
     public void updateOrder() {

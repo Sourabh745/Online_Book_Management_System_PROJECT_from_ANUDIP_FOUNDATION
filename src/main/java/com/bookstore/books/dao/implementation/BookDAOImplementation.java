@@ -2,6 +2,7 @@ package com.bookstore.books.dao.implementation;
 
 import java.util.List;
 
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
@@ -18,7 +19,6 @@ public class BookDAOImplementation implements BookDAO{
 		Transaction transaction = null;
 	    try (Session session = HibernateUtils.getSessionFactory().openSession()) {
 	        transaction = session.beginTransaction();
-	        
 	        // Save the book
 	        session.save(book);
 	        
@@ -26,13 +26,17 @@ public class BookDAOImplementation implements BookDAO{
 	        transaction.commit();
 	        
 	        return book;  // Return the saved book object
-	    } catch (Exception e) {
-	        if (transaction != null) {
-	            transaction.rollback();
+	    } catch (HibernateException e) {
+	        if (transaction != null && transaction.isActive()) {
+	            transaction.rollback(); // Rollback only if transaction is active
 	        }
 	        e.printStackTrace();
+	        throw new RuntimeException("Failed to add book: " + e.getMessage());
+	    } catch (Exception e) {
+	        // Handle any other exceptions
+	        e.printStackTrace();
+	        throw new RuntimeException("Failed to add book due to unexpected error: " + e.getMessage());
 	    }
-	    return null;
 	}
 
 	@Override
@@ -56,30 +60,9 @@ public class BookDAOImplementation implements BookDAO{
 	    }
 	    return books;  // Return the list of books
 	}
-	
+		
 	@Override
-	public Book getBookById(int bookId) {
-		Transaction transaction = null;
-	    Book book = null;
-	    try (Session session = HibernateUtils.getSessionFactory().openSession()) {
-	        transaction = session.beginTransaction();
-	        
-	        // Retrieve the book by its ID
-	        book = session.get(Book.class, bookId);
-	        
-	        // Commit the transaction
-	        transaction.commit();
-	    } catch (Exception e) {
-	        if (transaction != null) {
-	            transaction.rollback();
-	        }
-	        e.printStackTrace();
-	    }
-	    return book;  // Return the retrieved book or null if not found
-	}
-
-	@Override
-	public Book updateBook(int id, Book updatedBook) {
+	public Book updateBook(String id, Book updatedBook) {
 		Transaction transaction = null;
 	    Book book = null;
 	    try (Session session = HibernateUtils.getSessionFactory().openSession()) {
@@ -102,17 +85,19 @@ public class BookDAOImplementation implements BookDAO{
 	        
 	        // Commit the transaction
 	        transaction.commit();
+	        return book;  // Return the updated book or null if not found
 	    } catch (Exception e) {
 	        if (transaction != null) {
 	            transaction.rollback();
 	        }
 	        e.printStackTrace();
+	        throw new RuntimeException("Failed to update book: " + e.getMessage());  // Propagate the exception		    
+
 	    }
-	    return book;  // Return the updated book or null if not found
 	}
 
 	@Override
-	public boolean deleteBook(int id) {
+	public boolean deleteBook(String id) {
 		Transaction transaction = null;
 	    boolean isDeleted = false;
 	    try (Session session = HibernateUtils.getSessionFactory().openSession()) {
@@ -132,13 +117,14 @@ public class BookDAOImplementation implements BookDAO{
 	        
 	        // Commit the transaction
 	        transaction.commit();
+	        return isDeleted;  // Return true if the book was deleted, false otherwise
 	    } catch (Exception e) {
 	        if (transaction != null) {
 	            transaction.rollback();
 	        }
 	        e.printStackTrace();
+	        throw new RuntimeException("Failed to delete book: " + e.getMessage());  // Propagate the exception		    
 	    }
-	    return isDeleted;  // Return true if the book was deleted, false otherwise
 	}
 
 	@Override
@@ -155,13 +141,35 @@ public class BookDAOImplementation implements BookDAO{
 	        
 	        // Commit the transaction
 	        transaction.commit();
+	        return books;  // Return the list of books by the author
 	    } catch (Exception e) {
 	        if (transaction != null) {
 	            transaction.rollback();
 	        }
 	        e.printStackTrace();
+	        throw new RuntimeException("Failed to get book: " + e.getMessage());  // Propagate the exception		    
 	    }
-	    return books;  // Return the list of books by the author
 	}
 
+	@Override
+	public Book getBookById(String bookId) {
+			Transaction transaction = null;
+		    Book book = null;
+		    try (Session session = HibernateUtils.getSessionFactory().openSession()) {
+		        transaction = session.beginTransaction();
+		        
+		        // Retrieve the book by its ID
+		        book = session.get(Book.class, bookId);
+		        
+		        // Commit the transaction
+		        transaction.commit();
+		        return book;  // Return the retrieved book or null if not found
+		    } catch (Exception e) {
+		        if (transaction != null) {
+		            transaction.rollback();
+		        }
+		        e.printStackTrace();
+		        throw new RuntimeException("Failed to get book: " + e.getMessage());  // Propagate the exception		    
+		}
+}
 }

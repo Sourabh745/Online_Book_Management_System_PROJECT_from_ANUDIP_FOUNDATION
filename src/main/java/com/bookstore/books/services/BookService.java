@@ -9,13 +9,13 @@ public interface BookService{
 
     Book createBook(Book book);
 
-    public Book getBookById(int bookId);
+    public Book getBookById(String bookId);
 
     public List<Book> getAllBooks();
 
-    public Book updateBook(int bookId, Book updatedBook);
+    public Book updateBook(String bookId, Book updatedBook);
 
-    public boolean deleteBook(int id);
+    public boolean deleteBook(String id);
 
     public List<Book> findBooksByAuthor(int authorId);
 }

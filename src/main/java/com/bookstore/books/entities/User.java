@@ -30,10 +30,10 @@ public class User {
     @Column(name = "Phone", length = 20)
     private String phone;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Orders> orders;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user",  fetch = FetchType.LAZY)
     private List<Review> reviews;
 
 	public User(int userID, String username, String password, String name, String email, String address, String phone,
@@ -135,22 +135,18 @@ public class User {
 		this.reviews = reviews;
 	}
 
-	@Override
-	public String toString() {
-		return "User [userID=" + userID + ", username=" + username + ", password=" + password + ", name=" + name
-				+ ", email=" + email + ", address=" + address + ", phone=" + phone + ", orders=" + orders + ", reviews="
-				+ reviews + "]";
-	}
-	
-    public String toString1() {
+
+    @Override
+    public String toString() {
         return "User{" +
                 "userID=" + userID +
                 ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", address='" + address + '\'' +
                 ", phone='" + phone + '\'' +
+                ", orderCount=" + (orders != null ? orders.size() : 0) +
+                ", reviewCount=" + (reviews != null ? reviews.size() : 0) +
                 '}';
     }
 

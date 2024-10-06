@@ -7,16 +7,16 @@ import jakarta.persistence.*;
 public class OrderItems {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+ //   @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "OrderItemID")
     private int orderItemID;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "OrderID", nullable = false)
     private Orders order;
 
-    @ManyToOne
-    @JoinColumn(name = "ISBN", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "BookID", nullable = false)
     private Book book;
 
     @Column(name = "Quantity")
@@ -25,7 +25,7 @@ public class OrderItems {
     @Column(name = "Price")
     private double price;
 
-	public OrderItems(int orderItemID, Orders order, Book book, int quantity, double price) {
+    public OrderItems(int orderItemID, Orders order, Book book, int quantity, double price) {
 		super();
 		this.orderItemID = orderItemID;
 		this.order = order;
@@ -33,6 +33,14 @@ public class OrderItems {
 		this.quantity = quantity;
 		this.price = price;
 	}
+    public OrderItems(int orderItemID, Orders order, Book book, double price) {
+		super();
+		this.orderItemID = orderItemID;
+		this.order = order;
+		this.book = book;
+		this.price = price;
+	}
+
 
 	public OrderItems() {
 		super();
@@ -80,11 +88,15 @@ public class OrderItems {
 	}
 
 	@Override
-	public String toString() {
-		return "OrderItems [orderItemID=" + orderItemID + ", order=" + order + ", book=" + book + ", quantity="
-				+ quantity + ", price=" + price + "]";
-	}
-
+    public String toString() {
+        return "OrderItems{" +
+                "orderItemID=" + orderItemID +
+                ", orderID=" + (order != null ? order.getOrderID() : "null") +
+                ", bookID=" + (book != null ? book.getBookId() : "null") +
+                ", quantity=" + quantity +
+                ", price=" + price +
+                '}';
+    }
     
     // Getters and Setters
 }

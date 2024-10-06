@@ -17,19 +17,21 @@ public class AdminDAOImplementation implements AdminDAO {
 	@Override
 	public Book addBook(Book book) {
 	    Transaction transaction = null;
-	    Book savedBook = null;
 	    try (Session session = HibernateUtils.getSessionFactory().openSession()) {
+	    	System.out.println("Opening session...");
 	        transaction = session.beginTransaction();
 	        session.save(book);
+	        System.out.println("Book saved: " + book);
 	        transaction.commit();
-	        savedBook = book;
+
+	        return book;
 	    } catch (Exception e) {
-	        if (transaction != null) {
+	        if (transaction != null && transaction.isActive()) {
 	            transaction.rollback();
 	        }
 	        e.printStackTrace();
+	        throw new RuntimeException("Failed to add book: " + e.getMessage());
 	    }
-	    return savedBook;
 	}
 
 
@@ -83,13 +85,19 @@ public class AdminDAOImplementation implements AdminDAO {
 
 	@Override
 	public List<User> getAllUsers() {
+	    List<User> users = null;
 	    try (Session session = HibernateUtils.getSessionFactory().openSession()) {
-	        return session.createQuery("from User", User.class).list();
+	    	users = session.createQuery(
+	    		    "select u from User u " +
+	    		    "left join fetch u.reviews " +
+	    		    "left join fetch u.orders", User.class).list();
+	    	return users;
 	    } catch (Exception e) {
 	        e.printStackTrace();
-	        return null;
 	    }
+	    return users;
 	}
+
 
 
 	@Override

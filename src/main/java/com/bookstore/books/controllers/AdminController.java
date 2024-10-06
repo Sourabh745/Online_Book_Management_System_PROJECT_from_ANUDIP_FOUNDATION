@@ -7,21 +7,42 @@ import com.bookstore.books.entities.Book;
 import com.bookstore.books.entities.Orders;
 import com.bookstore.books.entities.User;
 import com.bookstore.books.services.AdminService;
+import com.bookstore.books.services.AuthorService;
 import com.bookstore.books.services.BookService;
 import com.bookstore.books.services.implementation.AdminServiceImplementation;
+import com.bookstore.books.services.implementation.AuthorServiceImplementation;
 import com.bookstore.books.services.implementation.BookServiceImplementation;
 
 public class AdminController {
     private AdminService adminService;
     private BookService bookService;
+    private AuthorService authorService;
     private Scanner scanner;
 
     public AdminController() {
         this.adminService = new AdminServiceImplementation();
         this.bookService = new BookServiceImplementation();
+        this.authorService = new AuthorServiceImplementation();
         this.scanner = new Scanner(System.in);
     }
 
+    public boolean adminLogin() {
+        System.out.print("Enter Admin Username: ");
+        String username = scanner.nextLine();
+        System.out.print("Enter Admin Password: ");
+        String password = scanner.nextLine();
+
+        // Validate the admin credentials (hard-coded or from a database)
+        if ("admin".equals(username) && "admin123".equals(password)) {
+            System.out.println("Admin login successful.");
+            return true;
+        } else {
+            System.out.println("Invalid credentials. Try again.");
+            return false;
+        }
+    }
+
+    
     public void showMenu() {
         while (true) {
             System.out.println("Admin Menu:");
@@ -75,33 +96,64 @@ public class AdminController {
 
     // Add Book
     private void addBook() {
+    	System.out.print("Enter book Id: ");
+        String bookId = scanner.nextLine();
         System.out.print("Enter book title: ");
         String title = scanner.nextLine();
         System.out.print("Enter book price: ");
         double price = scanner.nextDouble();
         scanner.nextLine();  // Consume newline
 
-        // Ask for the Author ID
-        System.out.print("Enter author ID: ");
-        int authorId = scanner.nextInt();
-        scanner.nextLine();  // Consume newline
+        // Ask if the admin wants to use an existing author or create a new one
+        System.out.println("Do you want to use an existing author or create a new one?");
+        System.out.println("1. Use existing author");
+        System.out.println("2. Create new author");
+        int choice = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
 
-        // Fetch the Author from the database using the author ID
-        Author author = adminService.getAuthorById(authorId);
+        Author author = null;
 
-        if (author == null) {
-            System.out.println("Author not found.");
+        if (choice == 1) {
+            // Using existing author
+            System.out.print("Enter existing author ID: ");
+            int authorId = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            // Fetch the Author from the database using the author ID
+            author = adminService.getAuthorById(authorId);
+
+            if (author == null) {
+                System.out.println("Author not found.");
+                return;
+            }
+        } else if (choice == 2) {
+            // Creating a new author
+            System.out.print("Enter author name: ");
+            String authorName = scanner.nextLine();
+            System.out.print("Enter author biography: ");
+            String authorBio = scanner.nextLine();
+
+            author = new Author();
+            author.setName(authorName);
+            author.setBiography(authorBio);
+
+            // Save the new author
+            author = authorService.createAuthor(author);
+        } else {
+            System.out.println("Invalid choice.");
             return;
         }
 
-        // Create a new Book and associate it with the fetched Author
+        // Create a new Book and associate it with the Author
         Book newBook = new Book();
+        newBook.setBookId(bookId);
         newBook.setTitle(title);
         newBook.setPrice(price);
         newBook.setAuthor(author);  // Set the associated author
 
         // Save the new book using the service
-        Book addedBook = adminService.addBook(newBook);  // Call bookService for book-related operations
+        //Book addedBook = adminService.addBook(newBook);
+        Book addedBook = bookService.createBook(newBook);
 
         if (addedBook != null) {
             System.out.println("Book added successfully: " + addedBook);
@@ -109,6 +161,7 @@ public class AdminController {
             System.out.println("Failed to add book.");
         }
     }
+
 
     // Update Book
     private void updateBook() {
@@ -163,7 +216,6 @@ public class AdminController {
     private void deleteBook() {
         System.out.print("Enter book ID to delete: ");
         String bookId = scanner.nextLine();
-        scanner.nextLine();  // Consume newline
 
         boolean success = bookService.deleteBook(bookId);  // Call bookService for book-related operations
         if (success) {

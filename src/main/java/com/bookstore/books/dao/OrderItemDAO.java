@@ -5,7 +5,7 @@ import java.util.List;
 import com.bookstore.books.entities.OrderItems;
 
 public interface OrderItemDAO {
-	public OrderItems addOrderItem(int orderId, int bookId, int quantity);
+	public OrderItems addOrderItem(int orderId, String bookId, int quantity);
 
     public OrderItems getOrderItemById(int id);
 

@@ -21,7 +21,7 @@ public class BookServiceImplementation implements BookService {
     }
 
     @Override
-    public Book getBookById(int bookId) {
+    public Book getBookById(String bookId) {
         return bookDAO.getBookById(bookId);
     }
 
@@ -31,12 +31,12 @@ public class BookServiceImplementation implements BookService {
     }
 
     @Override
-    public Book updateBook(int bookId, Book updatedBook) {
+    public Book updateBook(String bookId, Book updatedBook) {
         return bookDAO.updateBook(bookId, updatedBook);
     }
 
     @Override
-    public boolean deleteBook(int bookId) {
+    public boolean deleteBook(String bookId) {
         return bookDAO.deleteBook(bookId);
     }
 

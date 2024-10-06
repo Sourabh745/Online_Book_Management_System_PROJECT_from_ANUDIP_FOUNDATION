@@ -17,7 +17,7 @@ public class OrderItemServiceImplementation implements OrderItemService{
 	}
 
 	@Override
-	public OrderItems addOrderItem(int orderId, int bookId, int quantity) {
+	public OrderItems addOrderItem(int orderId, String bookId, int quantity) {
 		// TODO Auto-generated method stub
 		return orderItemDAO.addOrderItem(orderId, bookId, quantity);
 	}

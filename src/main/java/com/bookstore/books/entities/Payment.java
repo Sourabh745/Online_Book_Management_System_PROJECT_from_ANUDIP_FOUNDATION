@@ -33,6 +33,13 @@ public class Payment {
 		this.paymentDate = paymentDate;
 		this.amount = amount;
 	}
+	
+	public Payment(String paymentMethod, double amount) {
+	    this.paymentMethod = paymentMethod;
+	    this.amount = amount;
+	    this.paymentDate = new Date(); // Automatically set to current date
+	}
+
 
 	public Payment() {
 		super();
@@ -81,8 +88,8 @@ public class Payment {
 
 	@Override
 	public String toString() {
-		return "Payment [paymentID=" + paymentID + ", order=" + order + ", paymentMethod=" + paymentMethod
-				+ ", paymentDate=" + paymentDate + ", amount=" + amount + "]";
+	    return "Payment [paymentID=" + paymentID + ", orderID=" + (order != null ? order.getOrderID() : "N/A") +
+	           ", paymentMethod=" + paymentMethod + ", paymentDate=" + paymentDate + ", amount=" + amount + "]";
 	}
 
     

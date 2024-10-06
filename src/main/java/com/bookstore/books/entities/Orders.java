@@ -1,5 +1,7 @@
 package com.bookstore.books.entities;
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -24,8 +26,9 @@ public class Orders {
 
     @Column(name = "Status", length = 50)
     private String status;
-
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    
+    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
+    //@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItems> orderItems;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
@@ -42,6 +45,27 @@ public class Orders {
 		this.orderItems = orderItems;
 		this.payments = payments;
 	}
+	
+	public Orders(User user, double totalCost, String status, List<OrderItems> orderItems, List<Payment> payments, Date orderDate) {
+		super();
+		this.user = user;
+		this.totalCost = totalCost;
+		this.status = status;
+		this.orderItems = orderItems;
+		this.payments = payments;
+		this.orderDate = orderDate;
+	}
+	
+	public Orders(User user, double totalCost, String status, List<OrderItems> orderItems, Date orderDate) {
+		super();
+		this.user = user;
+		this.totalCost = totalCost;
+		this.status = status;
+		this.orderItems = orderItems;
+		this.orderDate = orderDate;
+	}
+
+
 
 	public Orders() {
 		super();
@@ -100,17 +124,29 @@ public class Orders {
 		return payments;
 	}
 
-	@SuppressWarnings("unchecked")
-	public void setPayments(Payment payment) {
-		this.payments = (List<Payment>) payment;
+	public void setPayments(List<Payment> payments) {
+		this.payments = payments;
 	}
 
+	public void addPayment(Payment payment) {
+	    if (this.payments == null) {
+	        this.payments = new ArrayList<>();
+	    }
+	    this.payments.add(payment);
+	}
+	
 	@Override
-	public String toString() {
-		return "Orders [orderID=" + orderID + ", user=" + user + ", orderDate=" + orderDate + ", totalCost=" + totalCost
-				+ ", status=" + status + ", orderItems=" + orderItems + ", payments=" + payments + "]";
-	}
-
+    public String toString() {
+        return "Orders{" +
+                "orderID=" + orderID +
+                ", userID=" + (user != null ? user.getUserID() : "null") +
+                ", orderDate=" + orderDate +
+                ", totalCost=" + totalCost +
+                ", status='" + status + '\'' +
+                ", itemCount=" + (orderItems != null ? orderItems.size() : 0) +
+                ", paymentCount=" + (payments != null ? payments.size() : 0) +
+                '}';
+    }
     
     // Getters and Setters
 }

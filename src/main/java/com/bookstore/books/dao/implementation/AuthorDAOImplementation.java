@@ -23,13 +23,14 @@ public class AuthorDAOImplementation implements AuthorDAO{
 	        
 	        // Commit the transaction
 	        transaction.commit();
+		    return author;  // Return the created author
 	    } catch (Exception e) {
 	        if (transaction != null) {
 	            transaction.rollback();
 	        }
 	        e.printStackTrace();
+	        throw new RuntimeException("Failed to add author: " + e.getMessage());  // Propagate the exception
 	    }
-	    return author;  // Return the created author
 	}
 
 
@@ -39,10 +40,11 @@ public class AuthorDAOImplementation implements AuthorDAO{
 	    try (Session session = HibernateUtils.getSessionFactory().openSession()) {
 	        // Retrieve the author by ID
 	        author = session.get(Author.class, id);
+	        return author;  // Return the author found or null if not found
 	    } catch (Exception e) {
 	        e.printStackTrace();
+	        throw new RuntimeException("Failed to get author: " + e.getMessage());  // Propagate the exception
 	    }
-	    return author;  // Return the author found or null if not found
 	}
 
 
@@ -53,10 +55,11 @@ public class AuthorDAOImplementation implements AuthorDAO{
 	        // Query to retrieve all authors
 	        Query<Author> query = session.createQuery("FROM Author", Author.class);
 	        authors = query.getResultList();
+	        return authors;  // Return the list of authors
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
-	    return authors;  // Return the list of authors
+	    return null;
 	}
 
 

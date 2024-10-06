@@ -56,13 +56,14 @@ public class UserDAOImplementation implements UserDAO{
 	public User getUserDetails(int userId) {
 		try (Session session = HibernateUtils.getSessionFactory().openSession()) {
 	        User user = session.get(User.class, userId);
-
 	        if (user != null) {
 	            // Initialize the lazy collection manually
 	            Hibernate.initialize(user.getOrders()); // Initialize orders collection
 	        }
-
 	        return user;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return null;
 	    }
 	}
 
@@ -125,46 +126,47 @@ public class UserDAOImplementation implements UserDAO{
 		return orders;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public Orders placeOrder(User user, List<OrderItems> orderItems, Payment payment) {
-		Transaction transaction = null;
+	    Transaction transaction = null;
 	    Orders newOrder = null;
+
 	    try (Session session = HibernateUtils.getSessionFactory().openSession()) {
 	        transaction = session.beginTransaction();
 	        
 	        // Create a new Order and set the user
 	        newOrder = new Orders();
 	        newOrder.setUser(user);
-	        newOrder.setOrderItems(orderItems);
-	        newOrder.setPayments(payment);
 	        newOrder.setOrderDate(new Date()); // Set the current date as the order date
 	        newOrder.setStatus("Pending"); // Set the initial order status
-	        
-	        // Save the new order
-	        session.save(newOrder);
-	        
-	        // Also save order items if needed (optional: can be cascaded depending on entity mappings)
+
+	        // Link order items to the order
 	        for (OrderItems orderItem : orderItems) {
-	            orderItem.setOrder(newOrder);  // Link the order items to this new order
+	            orderItem.setOrder(newOrder);  // Link the order item to the new order
+	            // Save each order item
 	            session.save(orderItem);
 	        }
 
-	        // Save payment details (optional: can be cascaded depending on entity mappings)
-	        session.save(payment);
+	        // Set the payment for the order and save it
+	        payment.setOrder(newOrder);  // Associate the payment with the order
+	        session.save(payment); // Save the payment details
+
+	        // Save the new order last
+	        session.save(newOrder);
 	        
 	        // Commit the transaction
 	        transaction.commit();
-	        
+
 	    } catch (Exception e) {
 	        if (transaction != null) {
 	            transaction.rollback();
 	        }
 	        e.printStackTrace();
 	    }
-	    
+
 	    return newOrder;
 	}
+
 
 	@Override
 	public Orders viewOrderDetails(int orderId) {

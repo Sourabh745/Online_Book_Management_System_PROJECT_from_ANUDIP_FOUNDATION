@@ -30,10 +30,10 @@ public class Book {
     @Column(name = "Quantity")
     private int quantity;
 
-    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<OrderItems> orderItems;
 
-    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Review> reviews;
 
     public Book(String bookId, String title, Author author, String description, Date publicationDate, double price,
@@ -59,6 +59,13 @@ public class Book {
 		this.quantity = quantity;
 	}
 
+	public Book(String bookId, String title, Author author, double price) {
+		super();
+		this.bookId = bookId;
+		this.title = title;
+		this.author = author;
+		this.price = price;
+	}
 	public Book() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -138,7 +145,7 @@ public class Book {
 
 	@Override
 	public String toString() {
-		return "Book [bookId=" + bookId + ", title=" + title + ", author=" + author + ", description=" + description
+		return "Book [bookId=" + bookId + ", title=" + title + ", author=" + (author != null ? author.getName() : "N/A") + ", description=" + description
 				+ ", publicationDate=" + publicationDate + ", price=" + price + ", quantity=" + quantity
 				+ ", orderItems=" + orderItems + ", reviews=" + reviews + "]";
 	}
