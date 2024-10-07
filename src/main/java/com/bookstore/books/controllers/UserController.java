@@ -109,6 +109,11 @@ public class UserController {
             return false;
         }
 
+        // Check for associated orders and remove references
+        for (Orders order : user.getOrders()) {
+            order.setUser(null); // Break the association with the user
+        }
+
         userService.deleteAccount(userId);
         System.out.println("User account deleted successfully.");
         return true;
@@ -126,19 +131,7 @@ public class UserController {
             System.out.println("No orders found.");
         }
     }
-
-    // Places a new order
-    public void placeOrder(int userId, List<OrderItems> orderItems, Payment payment) {
-        User user = userService.getUserDetails(userId);
-        if (user == null) {
-            System.out.println("User not found. Unable to place order.");
-            return;
-        }
-
-        Orders newOrder = orderService.createOrder(user, orderItems, payment);
-        System.out.println("Order placed successfully: " + newOrder);
-    }
-
+    
     // Views details of a specific order
     public void viewOrderDetails(int orderId) {
         Orders order = orderService.getOrderById(orderId);

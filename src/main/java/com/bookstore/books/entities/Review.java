@@ -11,11 +11,11 @@ public class Review {
     @Column(name = "ReviewID")
     private int reviewID;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY) // Use LAZY loading to prevent issues
     @JoinColumn(name = "BookID", nullable = false)
     private Book book;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY) // Use LAZY loading to prevent issues
     @JoinColumn(name = "UserID", nullable = false)
     private User user;
 
@@ -81,8 +81,12 @@ public class Review {
 
 	@Override
 	public String toString() {
-		return "Review [reviewID=" + reviewID + ", book=" + book + ", user=" + user + ", rating=" + rating
-				+ ", reviewText=" + reviewText + "]";
+		return "Review [reviewID=" + reviewID +
+                ", bookID=" + (book != null ? book.getBookId() : "null") + // Use only book ID
+                ", userID=" + (user != null ? user.getUserID() : "null") + // Use only user ID
+                ", rating=" + rating +
+                ", reviewText='" + reviewText + '\'' +
+                ']';
 	}
 
     

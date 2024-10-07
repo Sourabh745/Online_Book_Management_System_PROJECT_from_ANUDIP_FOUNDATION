@@ -2,6 +2,7 @@ package com.bookstore.books.dao.implementation;
 
 import java.util.List;
 
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
@@ -15,7 +16,7 @@ import com.bookstore.books.utils.HibernateUtils;
 public class ReviewDAOImplementation implements ReviewDAO{
 
 	@Override
-	public Review createReview(User user, int bookId, String reviewText, int rating) {
+	public Review createReview(User user, String bookId, String reviewText, int rating) {
 	    Transaction transaction = null;
 	    Review newReview = null;
 	    try (Session session = HibernateUtils.getSessionFactory().openSession()) {
@@ -26,6 +27,8 @@ public class ReviewDAOImplementation implements ReviewDAO{
 	        if (book == null) {
 	            throw new RuntimeException("Book not found");
 	        }
+	        
+	       // Hibernate.initialize(book.getOrderItems());
 	        
 	        // Create a new Review
 	        newReview = new Review();
@@ -40,7 +43,7 @@ public class ReviewDAOImplementation implements ReviewDAO{
 	        // Commit the transaction
 	        transaction.commit();
 	    } catch (Exception e) {
-	        if (transaction != null) {
+	        if (transaction != null && transaction.isActive()) {
 	            transaction.rollback();
 	        }
 	        e.printStackTrace();
@@ -95,7 +98,7 @@ public class ReviewDAOImplementation implements ReviewDAO{
 
 
 	@Override
-	public List<Review> getReviewsForBook(int bookId) {
+	public List<Review> getReviewsForBook(String bookId) {
 	    Transaction transaction = null;
 	    List<Review> reviews = null;
 	    try (Session session = HibernateUtils.getSessionFactory().openSession()) {
@@ -106,15 +109,17 @@ public class ReviewDAOImplementation implements ReviewDAO{
 	        query.setParameter("bookId", bookId);
 	        reviews = query.getResultList();
 	        
+	        
 	        // Commit the transaction
 	        transaction.commit();
+	        return reviews;  // Return the list of reviews for the book
 	    } catch (Exception e) {
 	        if (transaction != null) {
 	            transaction.rollback();
 	        }
 	        e.printStackTrace();
 	    }
-	    return reviews;  // Return the list of reviews for the book
+	    return null;
 	}
 
 
@@ -130,15 +135,22 @@ public class ReviewDAOImplementation implements ReviewDAO{
 	        query.setParameter("userId", userId);
 	        reviews = query.getResultList();
 	        
+	        for (Review review : reviews) {
+	            Hibernate.initialize(review.getBook());  // Initialize the associated book
+	            // If the Book entity has lazily loaded collections, initialize them as well
+	            Hibernate.initialize(review.getBook().getOrderItems());  // Initialize orderItems or other collections
+	            Hibernate.initialize(review.getBook().getReviews());
+	        }
 	        // Commit the transaction
 	        transaction.commit();
+	        return reviews;  // Return the list of reviews written by the user
 	    } catch (Exception e) {
 	        if (transaction != null) {
 	            transaction.rollback();
 	        }
 	        e.printStackTrace();
 	    }
-	    return reviews;  // Return the list of reviews written by the user
+	    return null;
 	}
 
 

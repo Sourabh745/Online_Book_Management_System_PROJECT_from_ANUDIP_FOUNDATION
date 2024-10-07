@@ -13,10 +13,10 @@ public interface AdminService {
     Book addBook(Book book);
 
     // Allows the admin to update book details and returns the updated Book object
-    Book updateBook(int bookId, Book updatedBook);
+    Book updateBook(String bookId, Book updatedBook);
 
     // Allows the admin to delete a book and returns a boolean indicating success or failure
-    boolean deleteBook(int bookId);
+    boolean deleteBook(String bookId);
 
     // Retrieves a list of all registered users
     List<User> getAllUsers();

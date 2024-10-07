@@ -228,7 +228,7 @@ public class AdminController {
     // View all Users
     private void viewAllUsers() {
         List<User> users = adminService.getAllUsers();
-        if (users != null && !users.isEmpty()) {
+        if (users != null) {
             System.out.println("All registered users:");
             for (User user : users) {
                 System.out.println(user);

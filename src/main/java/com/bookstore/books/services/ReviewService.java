@@ -7,13 +7,13 @@ import com.bookstore.books.entities.User;
 
 public interface ReviewService {
     
-    Review createReview(User user, int bookId, String reviewText, int rating);
+    Review createReview(User user, String bookId, String reviewText, int rating);
 
     Review getReviewById(int id);
 
     List<Review> getAllReviews();
 
-    List<Review> getReviewsForBook(int bookId);
+    List<Review> getReviewsForBook(String bookId);
 
     List<Review> getReviewsByUser(int userId);
 

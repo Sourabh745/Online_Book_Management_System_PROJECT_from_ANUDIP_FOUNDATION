@@ -58,6 +58,9 @@ public class User {
         this.address = address;
         this.phone = phone;
     }
+	
+	
+	
 	public User() {
 		super();
 		// TODO Auto-generated constructor stub

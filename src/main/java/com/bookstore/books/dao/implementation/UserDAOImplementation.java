@@ -59,6 +59,7 @@ public class UserDAOImplementation implements UserDAO{
 	        if (user != null) {
 	            // Initialize the lazy collection manually
 	            Hibernate.initialize(user.getOrders()); // Initialize orders collection
+	            Hibernate.initialize(user.getReviews());
 	        }
 	        return user;
 	    } catch (Exception e) {
@@ -85,22 +86,22 @@ public class UserDAOImplementation implements UserDAO{
 
 	@Override
 	public boolean deleteAccount(int userId) {
-		Transaction transaction = null;
-        try (Session session = HibernateUtils.getSessionFactory().openSession()) {
-            transaction = session.beginTransaction();
-            User user = session.get(User.class, userId);
-            if (user != null) {
-                session.delete(user); // Delete user object from the database
-                transaction.commit();
-            }
-            return true;
-        } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
-            e.printStackTrace();
-        }
-		return false;
+	    Transaction transaction = null;
+	    try (Session session = HibernateUtils.getSessionFactory().openSession()) {
+	        transaction = session.beginTransaction();
+	        User user = session.get(User.class, userId);
+	        if (user != null) {
+	            session.delete(user); // Delete user object from the database
+	            transaction.commit();
+	            return true;
+	        }
+	    } catch (Exception e) {
+	        if (transaction != null) {
+	            transaction.rollback();
+	        }
+	        e.printStackTrace();
+	    }
+	    return false;
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package com.bookstore.books.dao.implementation;
 
 import java.util.List;
 
+import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -52,13 +53,14 @@ public class BookDAOImplementation implements BookDAO{
 	        
 	        // Commit the transaction
 	        transaction.commit();
+	        return books;  // Return the list of books
 	    } catch (Exception e) {
 	        if (transaction != null) {
 	            transaction.rollback();
 	        }
 	        e.printStackTrace();
+	        throw new RuntimeException("Failed to get all books : " + e.getMessage());
 	    }
-	    return books;  // Return the list of books
 	}
 		
 	@Override
@@ -72,11 +74,14 @@ public class BookDAOImplementation implements BookDAO{
 	        book = session.get(Book.class, id);
 	        
 	        if (book != null) {
+	            Hibernate.initialize(book.getOrderItems());
+	            Hibernate.initialize(book.getReviews());  // Initialize reviews
+
 	            // Update the book fields
 	            book.setTitle(updatedBook.getTitle());
 	            book.setAuthor(updatedBook.getAuthor());
 	            book.setPrice(updatedBook.getPrice());
-	            book.setDescription(updatedBook.getDescription());
+	            //book.setDescription(updatedBook.getDescription());
 	            // Update any other fields as required
 
 	            // Save the updated book

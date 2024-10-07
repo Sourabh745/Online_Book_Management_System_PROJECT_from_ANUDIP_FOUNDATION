@@ -41,8 +41,7 @@ public class OrderController {
                 System.out.println("3. View Order by ID");
                 System.out.println("4. Update Order");
                 System.out.println("5. Delete Order");
-                System.out.println("6. Logout");
-                System.out.println("7. Exit");
+                System.out.println("6. Exit");
                 System.out.print("Choose an option: ");
 
                 int choice = scanner.nextInt();
@@ -64,10 +63,8 @@ public class OrderController {
                     case 5:
                         deleteOrder();
                         break;
+                 
                     case 6:
-                        logout();
-                        break;
-                    case 7:
                         System.out.println("Exiting...");
                         return;
                     default:
@@ -76,28 +73,7 @@ public class OrderController {
             }
         }
     }
-
-//    // Login method to allow users to log in
-//    private void login() {
-//        System.out.print("Enter username: ");
-//        String username = scanner.nextLine();
-//        System.out.print("Enter password: ");
-//        String password = scanner.nextLine();
-//
-//        loggedInUser = userService.authenticateUser(username, password);
-//
-//        if (loggedInUser != null) {
-//            System.out.println("Login successful! Welcome " + loggedInUser.getUsername());
-//        } else {
-//            System.out.println("Invalid credentials. Please try again.");
-//        }
-//    }
-
-    // Logout method to log out the user
-    private void logout() {
-        System.out.println("Logging out...");
-        loggedInUser = null;
-    }
+    
 
     // Create Order
     public void createOrder(User loggedInUser) {
@@ -136,7 +112,7 @@ public class OrderController {
 
     // View All Orders (for the logged-in user)
     public void viewAllOrders() {
-        if (loggedInUser.getUsername() == "admin") {
+        if (loggedInUser.getUsername() != "admin") {
             System.out.println("You must be logged in to view your orders.");
             return;
         }

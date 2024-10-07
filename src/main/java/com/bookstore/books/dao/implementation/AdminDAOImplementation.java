@@ -2,6 +2,7 @@ package com.bookstore.books.dao.implementation;
 
 import java.util.List;
 
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -37,7 +38,7 @@ public class AdminDAOImplementation implements AdminDAO {
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public Book updateBook(int bookId, Book updatedBook) {
+	public Book updateBook(String bookId, Book updatedBook) {
 	    Transaction transaction = null;
 	    Book existingBook = null;
 	    try (Session session = HibernateUtils.getSessionFactory().openSession()) {
@@ -47,22 +48,24 @@ public class AdminDAOImplementation implements AdminDAO {
 	            existingBook.setTitle(updatedBook.getTitle());
 	            existingBook.setAuthor(updatedBook.getAuthor());
 	            existingBook.setPrice(updatedBook.getPrice());
-	            existingBook.setDescription(updatedBook.getDescription());
+	            //existingBook.setDescription(updatedBook.getDescription());
 	            session.update(existingBook);
 	            transaction.commit();
+	            return existingBook;
 	        }
 	    } catch (Exception e) {
 	        if (transaction != null) {
 	            transaction.rollback();
 	        }
 	        e.printStackTrace();
+	        throw new RuntimeException("Failed to update book : " + e.getMessage());
 	    }
-	    return existingBook;
+	    return null;
 	}
   
 
 	@Override
-	public boolean deleteBook(int bookId) {
+	public boolean deleteBook(String bookId) {
 	    Transaction transaction = null;
 	    boolean isDeleted = false;
 	    try (Session session = HibernateUtils.getSessionFactory().openSession()) {
@@ -83,30 +86,57 @@ public class AdminDAOImplementation implements AdminDAO {
 	}
 
 
-	@Override
 	public List<User> getAllUsers() {
+	    Transaction transaction = null;
 	    List<User> users = null;
+
 	    try (Session session = HibernateUtils.getSessionFactory().openSession()) {
-	    	users = session.createQuery(
-	    		    "select u from User u " +
-	    		    "left join fetch u.reviews " +
-	    		    "left join fetch u.orders", User.class).list();
-	    	return users;
+	        transaction = session.beginTransaction();
+	        
+	        // Fetch all users
+	        users = session.createQuery("from User", User.class).list();
+	        
+	        // Initialize lazy collections (orders and reviews) for each user
+	        for (User user : users) {
+	            Hibernate.initialize(user.getOrders());
+	            Hibernate.initialize(user.getReviews());
+	        }
+
+	        transaction.commit();
+	        return users;
 	    } catch (Exception e) {
+	        if (transaction != null && transaction.isActive()) {
+	            transaction.rollback();
+	        }
 	        e.printStackTrace();
+	        throw new RuntimeException("Failed to get all users: " + e.getMessage());
 	    }
-	    return users;
 	}
 
 
 
 	@Override
 	public User getUserById(int userId) {
+	    Transaction transaction = null;
+	    User user = null;
 	    try (Session session = HibernateUtils.getSessionFactory().openSession()) {
-	        return session.get(User.class, userId);
+	        transaction = session.beginTransaction();
+	     // First retrieve the User object
+	        user = session.get(User.class, userId);
+
+	        if (user != null) {
+	            // Now initialize the lazy-loaded collections
+	            Hibernate.initialize(user.getOrders());
+	            Hibernate.initialize(user.getReviews());
+	        }
+	        transaction.commit();
+	        return user;
 	    } catch (Exception e) {
+	        if (transaction != null &&  transaction.isActive()) {
+	            transaction.rollback();
+	        }
 	        e.printStackTrace();
-	        return null;
+	        throw new RuntimeException("Failed to get  user : " + e.getMessage());
 	    }
 	}
 	
@@ -117,14 +147,18 @@ public class AdminDAOImplementation implements AdminDAO {
 	    try (Session session = HibernateUtils.getSessionFactory().openSession()) {
 	        transaction = session.beginTransaction();
 	        author = session.get(Author.class, authorId);
+	        if(author != null) {
+	        	Hibernate.initialize(author.getBooks());
+	        }
 	        transaction.commit();
+	        return author;
 	    } catch (Exception e) {
 	        if (transaction != null) {
 	            transaction.rollback();
 	        }
 	        e.printStackTrace();
+	        throw new RuntimeException("Failed to get author by id : " + e.getMessage());
 	    }
-	    return author;
 	}
 
 
@@ -153,22 +187,54 @@ public class AdminDAOImplementation implements AdminDAO {
 
 	@Override
 	public List<Orders> getAllOrders() {
+	   
+	    Transaction transaction = null;
+	    List<Orders> orders = null;
+
 	    try (Session session = HibernateUtils.getSessionFactory().openSession()) {
-	        return session.createQuery("from Orders", Orders.class).list();
+	        transaction = session.beginTransaction();
+	        
+	        // Fetch all users
+	        orders = session.createQuery("from Orders", Orders.class).list();
+	        
+	        // Initialize lazy collections (orders and reviews) for each user
+	        for (Orders order : orders) {
+	            Hibernate.initialize(order.getOrderItems());
+	            Hibernate.initialize(order.getPayments());
+	        }
+
+	        transaction.commit();
+	        return orders;
 	    } catch (Exception e) {
+	        if (transaction != null && transaction.isActive()) {
+	            transaction.rollback();
+	        }
 	        e.printStackTrace();
-	        return null;
+	        throw new RuntimeException("Failed to get all users: " + e.getMessage());
 	    }
 	}
 	
 
 	@Override
 	public Orders getOrderById(int orderId) {
+	    
+	    Transaction transaction = null;
+	    Orders order = null;
 	    try (Session session = HibernateUtils.getSessionFactory().openSession()) {
-	        return session.get(Orders.class, orderId);
+	        transaction = session.beginTransaction();
+	        order = session.get(Orders.class, orderId);
+	        if(order != null) {
+	        	Hibernate.initialize(order.getOrderItems());
+	        	Hibernate.initialize(order.getPayments());
+	        }
+	        transaction.commit();
+	        return order;
 	    } catch (Exception e) {
+	        if (transaction != null) {
+	            transaction.rollback();
+	        }
 	        e.printStackTrace();
-	        return null;
+	        throw new RuntimeException("Failed to get author by id : " + e.getMessage());
 	    }
 	}
 

@@ -27,13 +27,13 @@ public class AdminServiceImplementation implements AdminService {
 	}
 
 	@Override
-	public Book updateBook(int bookId, Book updatedBook) {
+	public Book updateBook(String bookId, Book updatedBook) {
 		// TODO Auto-generated method stub
 		return adminDAO.updateBook(bookId, updatedBook);
 	}
 
 	@Override
-	public boolean deleteBook(int bookId) {
+	public boolean deleteBook(String bookId) {
 		// TODO Auto-generated method stub
 		return adminDAO.deleteBook(bookId);
 	}

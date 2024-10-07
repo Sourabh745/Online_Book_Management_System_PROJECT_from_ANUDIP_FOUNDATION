@@ -147,7 +147,7 @@ public class Book {
 	public String toString() {
 		return "Book [bookId=" + bookId + ", title=" + title + ", author=" + (author != null ? author.getName() : "N/A") + ", description=" + description
 				+ ", publicationDate=" + publicationDate + ", price=" + price + ", quantity=" + quantity
-				+ ", orderItems=" + orderItems + ", reviews=" + reviews + "]";
+				+ "]";
 	}
 
     

@@ -121,7 +121,10 @@ public class OrderDAOImplementation implements OrderDAO{
 	        
 	        // Retrieve the order by its ID
 	        order = session.get(Orders.class, id);
-	        
+	        if(order != null) {
+	        	Hibernate.initialize(order.getOrderItems());
+	        	Hibernate.initialize(order.getPayments());
+	        }
 	        // Commit the transaction
 	        transaction.commit();
 	        return order;  // Return the retrieved order
@@ -172,6 +175,10 @@ public class OrderDAOImplementation implements OrderDAO{
 	        query.setParameter("userId", userId);
 	        orders = query.getResultList();
 	        
+	        for (Orders order : orders) {
+	            Hibernate.initialize(order.getPayments());
+	            Hibernate.initialize(order.getOrderItems());
+	        }
 	        // Commit the transaction
 	        transaction.commit();
 	        return orders;  // Return the list of orders by user

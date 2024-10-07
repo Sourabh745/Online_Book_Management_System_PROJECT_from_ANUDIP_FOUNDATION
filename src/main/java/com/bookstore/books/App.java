@@ -103,7 +103,7 @@ public class App {
                 }
                 break;
             case 4:
-               orderController.viewOrderById();//viewOrderHistory(loggedInUser.getUserID());
+            	userController.viewOrderHistory(loggedInUser.getUserID());//viewOrderHistory(loggedInUser.getUserID());
                 break;
             case 5:
                 placeOrder();  // Custom method in Main to handle ordering
@@ -127,6 +127,7 @@ public class App {
     }
 
     private void placeOrder() {
+    	
         // Example of interacting with OrderController
         System.out.println("Placing an order...");
 //        ManageOrders mo = new ManageOrders();
@@ -146,7 +147,7 @@ public class App {
 //        String reviewText = scanner.nextLine();
 //        System.out.print("Enter Rating (1-5): ");
 //        int rating = scanner.nextInt();
-        reviewController.showMenu();
+        reviewController.showMenu(loggedInUser);
 
 //        reviewController.addReview(bookId, loggedInUser.getUserID(), reviewText, rating);
     }

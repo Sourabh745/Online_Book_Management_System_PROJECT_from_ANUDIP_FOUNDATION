@@ -19,7 +19,7 @@ public class ReviewServiceImplementation implements ReviewService {
 	}
 
 	@Override
-	public Review createReview(User user, int bookId, String reviewText, int rating) {
+	public Review createReview(User user, String bookId, String reviewText, int rating) {
 		// TODO Auto-generated method stub
 		return reviewDAO.createReview(user, bookId, reviewText, rating);
 	}
@@ -37,7 +37,7 @@ public class ReviewServiceImplementation implements ReviewService {
 	}
 
 	@Override
-	public List<Review> getReviewsForBook(int bookId) {
+	public List<Review> getReviewsForBook(String bookId) {
 		// TODO Auto-generated method stub
 		return reviewDAO.getReviewsForBook(bookId);
 	}
