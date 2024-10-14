@@ -45,20 +45,24 @@ public class AdminController {
     
     public void showMenu() {
         while (true) {
+        	System.out.println("============================================");
             System.out.println("Admin Menu:");
             System.out.println("1. Add a Book");
             System.out.println("2. Update Book");
             System.out.println("3. Delete Book");
-            System.out.println("4. View All Users");
-            System.out.println("5. View User by ID");
-            System.out.println("6. Delete User");
-            System.out.println("7. View All Orders");
-            System.out.println("8. View Order by ID");
-            System.out.println("9. Exit");
+            System.out.println("4. View All Books");
+            System.out.println("5. View All Users");
+            System.out.println("6. View User by ID");
+            System.out.println("7. Delete User");
+            System.out.println("8. View All Orders");
+            System.out.println("9. View Order by ID");
+            System.out.println("10. View all authors");
+            System.out.println("11. Exit");
             System.out.print("Choose an option: ");
 
             int choice = scanner.nextInt();
             scanner.nextLine();  // Consume newline
+        	System.out.println("============================================");
 
             switch (choice) {
                 case 1:
@@ -71,21 +75,27 @@ public class AdminController {
                     deleteBook();
                     break;
                 case 4:
+                	viewAllBooks();
+                	break;
+                case 5:
                     viewAllUsers();
                     break;
-                case 5:
+                case 6:
                     viewUserById();
                     break;
-                case 6:
+                case 7:
                     deleteUser();
                     break;
-                case 7:
+                case 8:
                     viewAllOrders();
                     break;
-                case 8:
+                case 9:
                     viewOrderById();
                     break;
-                case 9:
+                case 10:
+                    viewAllAuthors();
+                    break;
+                case 11:
                     System.out.println("Exiting...");
                     return;
                 default:
@@ -96,10 +106,13 @@ public class AdminController {
 
     // Add Book
     private void addBook() {
-    	System.out.print("Enter book Id: ");
-        String bookId = scanner.nextLine();
+    	
+    	System.out.print("Enter book id: ");
+    	String bookid = scanner.nextLine();
         System.out.print("Enter book title: ");
         String title = scanner.nextLine();
+        System.out.print("Enter Book Description: ");
+        String description = scanner.nextLine();
         System.out.print("Enter book price: ");
         double price = scanner.nextDouble();
         scanner.nextLine();  // Consume newline
@@ -111,18 +124,31 @@ public class AdminController {
         int choice = scanner.nextInt();
         scanner.nextLine(); // Consume newline
 
-        Author author = null;
+        Author author ;
 
         if (choice == 1) {
-            // Using existing author
+            // Fetch and display all existing authors
+            List<Author> authors = authorService.getAllAuthors();
+            if (authors == null || authors.isEmpty()) {
+                System.out.println("No authors available. You need to create one.");
+                return; // Exit since there are no authors to select from
+            }
+
+            // Display the list of authors
+            System.out.println("Available authors:");
+            for (Author a : authors) {
+                System.out.println("ID: " + a.getAuthorID() + " | Name: " + a.getName());
+            }
+
+            // Prompt the admin to choose an author by ID
             System.out.print("Enter existing author ID: ");
             int authorId = scanner.nextInt();
             scanner.nextLine(); // Consume newline
 
-            // Fetch the Author from the database using the author ID
+            // Fetch the selected Author from the database using the author ID
             author = adminService.getAuthorById(authorId);
 
-            if (author == null) {
+            if (author == null || authors.isEmpty()) {
                 System.out.println("Author not found.");
                 return;
             }
@@ -146,8 +172,9 @@ public class AdminController {
 
         // Create a new Book and associate it with the Author
         Book newBook = new Book();
-        newBook.setBookId(bookId);
+        newBook.setBookId(bookid);
         newBook.setTitle(title);
+        newBook.setDescription(description);
         newBook.setPrice(price);
         newBook.setAuthor(author);  // Set the associated author
 
@@ -236,6 +263,34 @@ public class AdminController {
         } else {
             System.out.println("No users found.");
         }
+    }
+    
+    private void viewAllBooks() {
+    	List<Book> books = bookService.getAllBooks();
+    	if(books != null) {
+    		System.out.println("All books :");
+            for (Book book : books) {
+                System.out.println(book);
+            }
+    	} else {
+            System.out.println("No book found.");
+        }
+    }
+    
+    //view all authors
+    private void viewAllAuthors() {
+    	List<Author> authors = authorService.getAllAuthors();
+
+    	if (authors != null) {
+    	    System.out.println("Available authors:");
+    	    for (Author author : authors) {
+    	        System.out.println("ID: " + author.getAuthorID() + ", Name: " + author.getName());
+    	    }
+    	}
+    	else {
+    		  System.out.println("No authors available.");
+    	}
+
     }
 
     // View User by ID

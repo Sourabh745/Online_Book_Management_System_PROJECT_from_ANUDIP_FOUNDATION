@@ -2,7 +2,6 @@ package com.bookstore.books;
 
 import java.util.Scanner;
 import com.bookstore.books.controllers.UserController;
-import com.bookstore.books.CallingMethods.ManageOrders;
 import com.bookstore.books.controllers.AdminController;
 import com.bookstore.books.controllers.OrderController;
 import com.bookstore.books.controllers.ReviewController;
@@ -88,7 +87,7 @@ public class App {
 
         int choice = 0;
         while(choice < 8) {
-        	System.out.println("Please choose an option (1-7 to see user details, 8 to exit):");
+        	System.out.println("Please choose an option :");
             choice = scanner.nextInt(); // Get user input for choice
         switch (choice) {
             case 1:
@@ -103,13 +102,13 @@ public class App {
                 }
                 break;
             case 4:
-            	userController.viewOrderHistory(loggedInUser.getUserID());//viewOrderHistory(loggedInUser.getUserID());
+            	userController.viewOrderHistory(loggedInUser.getUserID());
                 break;
             case 5:
-                placeOrder();  // Custom method in Main to handle ordering
+                placeOrder();  
                 break;
             case 6:
-                addReview();  // Custom method in Main to handle adding a review
+                addReview();  
                 break;
             case 7:
                 loggedInUser = null;
@@ -128,27 +127,16 @@ public class App {
 
     private void placeOrder() {
     	
-        // Example of interacting with OrderController
         System.out.println("Placing an order...");
-//        ManageOrders mo = new ManageOrders();
-//        mo.managingOrders();
+
         orderController.showMenu(loggedInUser);
-        // You would gather order details here and pass them to orderController
-        // Example: orderController.placeOrder(loggedInUser.getUserID(), orderItems, payment);
+       
     }
 
     private void addReview() {
-        // Example of interacting with ReviewController
         System.out.println("Adding a review...");
-//        System.out.print("Enter Book ID: ");
-//        int bookId = scanner.nextInt();
-//        scanner.nextLine(); // Consume newline
-//        System.out.print("Enter Review Text: ");
-//        String reviewText = scanner.nextLine();
-//        System.out.print("Enter Rating (1-5): ");
-//        int rating = scanner.nextInt();
+
         reviewController.showMenu(loggedInUser);
 
-//        reviewController.addReview(bookId, loggedInUser.getUserID(), reviewText, rating);
     }
 }

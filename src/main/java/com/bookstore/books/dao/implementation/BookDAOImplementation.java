@@ -9,6 +9,7 @@ import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
 import com.bookstore.books.dao.BookDAO;
+import com.bookstore.books.entities.Author;
 import com.bookstore.books.entities.Book;
 import com.bookstore.books.entities.User;
 import com.bookstore.books.utils.HibernateUtils;
@@ -44,18 +45,21 @@ public class BookDAOImplementation implements BookDAO{
 	public List<Book> getAllBooks() {
 		Transaction transaction = null;
 	    List<Book> books = null;
+
 	    try (Session session = HibernateUtils.getSessionFactory().openSession()) {
 	        transaction = session.beginTransaction();
+	        	        // Fetch all users
+	        books = session.createQuery("from Book", Book.class).list();
 	        
-	        // Retrieve all books
-	        Query<Book> query = session.createQuery("FROM Book", Book.class);
-	        books = query.getResultList();
-	        
-	        // Commit the transaction
+	        for (Book book : books) {
+	        	Hibernate.initialize(book.getOrderItems());
+	            Hibernate.initialize(book.getReviews());
+	        }
+
 	        transaction.commit();
-	        return books;  // Return the list of books
+	        return books;
 	    } catch (Exception e) {
-	        if (transaction != null) {
+	        if (transaction != null && transaction.isActive()) {
 	            transaction.rollback();
 	        }
 	        e.printStackTrace();

@@ -21,7 +21,7 @@ public class BookController {
     }
 
     // Creates a new Book and returns the created Book object
-    public Book createBook(String bookId, String title, int authorId, String description, double price, int quantity) {
+    public Book createBook(String bookId, String title, int authorId, String description, double price) {
         // Find the author by ID to associate with the book
         Author author = authorService.getAuthorById(authorId);
         if (author == null) {
@@ -30,7 +30,7 @@ public class BookController {
         }
 
         // Create the book entity and save it
-        Book book = new Book(bookId, title, author, description, price, quantity);
+        Book book = new Book(bookId, title, author, description, price);
         Book createdBook = bookService.createBook(book);
         
         if (createdBook != null) {

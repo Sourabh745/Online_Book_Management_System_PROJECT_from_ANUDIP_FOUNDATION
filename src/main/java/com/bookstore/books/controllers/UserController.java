@@ -143,7 +143,7 @@ public class UserController {
     }
 
     // Adds a review for a book
-    public void addReview(int bookId, int userId, String reviewText, int rating) {
+    public void addReview(String bookId, int userId, String reviewText, int rating) {
         User user = userService.getUserDetails(userId);
         if (user == null) {
             System.out.println("User not found. Unable to add review.");

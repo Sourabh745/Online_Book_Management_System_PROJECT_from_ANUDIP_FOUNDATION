@@ -8,7 +8,8 @@ import java.util.List;
 public class Book {
 
     @Id
-    @Column(name = "BookID", length = 13)
+   // @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "BookID")
     private String bookId;
 
     @Column(name = "Title", nullable = false)
@@ -49,14 +50,13 @@ public class Book {
 		this.orderItems = orderItems;
 		this.reviews = reviews;
 	}
-    public Book(String bookId, String title, Author author, String description,double price, int quantity) {
+    public Book(String bookId, String title, Author author, String description,double price) {
 		super();
 		this.bookId = bookId;
 		this.title = title;
 		this.author = author;
 		this.description = description;
 		this.price = price;
-		this.quantity = quantity;
 	}
 
 	public Book(String bookId, String title, Author author, double price) {

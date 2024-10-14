@@ -1,13 +1,16 @@
 package com.bookstore.books.dao.implementation;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
 import com.bookstore.books.dao.AuthorDAO;
 import com.bookstore.books.entities.Author;
+import com.bookstore.books.entities.User;
 import com.bookstore.books.utils.HibernateUtils;
 
 public class AuthorDAOImplementation implements AuthorDAO{
@@ -35,32 +38,53 @@ public class AuthorDAOImplementation implements AuthorDAO{
 
 
 	@Override
-	public Author getAuthorById(int id) {
+	public Author getAuthorById(int authorId) {
+	    Transaction transaction = null;
 	    Author author = null;
 	    try (Session session = HibernateUtils.getSessionFactory().openSession()) {
-	        // Retrieve the author by ID
-	        author = session.get(Author.class, id);
-	        return author;  // Return the author found or null if not found
+	        transaction = session.beginTransaction();
+	        author = session.get(Author.class, authorId);
+	        if(author != null) {
+	        	Hibernate.initialize(author.getBooks());
+	        }
+	        transaction.commit();
+	        return author;
 	    } catch (Exception e) {
+	        if (transaction != null) {
+	            transaction.rollback();
+	        }
 	        e.printStackTrace();
-	        throw new RuntimeException("Failed to get author: " + e.getMessage());  // Propagate the exception
+	        throw new RuntimeException("Failed to get author by id : " + e.getMessage());
 	    }
 	}
-
 
 	@Override
 	public List<Author> getAllAuthors() {
+
+		Transaction transaction = null;
 	    List<Author> authors = null;
+
 	    try (Session session = HibernateUtils.getSessionFactory().openSession()) {
-	        // Query to retrieve all authors
-	        Query<Author> query = session.createQuery("FROM Author", Author.class);
-	        authors = query.getResultList();
-	        return authors;  // Return the list of authors
+	        transaction = session.beginTransaction();
+	        	        // Fetch all users
+	        authors = session.createQuery("from Author", Author.class).list();
+	        
+	        for (Author author : authors) {
+	            Hibernate.initialize(author.getBooks());
+	        }
+
+	        transaction.commit();
+	        return authors;
 	    } catch (Exception e) {
+	        if (transaction != null && transaction.isActive()) {
+	            transaction.rollback();
+	        }
 	        e.printStackTrace();
+	        throw new RuntimeException("Failed to get all users: " + e.getMessage());
 	    }
-	    return null;
 	}
+
+
 
 
 	@Override

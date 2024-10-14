@@ -32,7 +32,7 @@ public class AuthorServiceImplementation implements AuthorService{
 	@Override
 	public List<Author> getAllAuthors() {
 		// TODO Auto-generated method stub
-		return null;
+		return authorDAO.getAllAuthors();
 	}
 
 	@Override

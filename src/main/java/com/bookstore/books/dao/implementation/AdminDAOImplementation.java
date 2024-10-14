@@ -24,7 +24,6 @@ public class AdminDAOImplementation implements AdminDAO {
 	        session.save(book);
 	        System.out.println("Book saved: " + book);
 	        transaction.commit();
-
 	        return book;
 	    } catch (Exception e) {
 	        if (transaction != null && transaction.isActive()) {
