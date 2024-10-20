@@ -39,5 +39,7 @@ public interface UserService  {
     
     // Retrieves all reviews written by the user
     public List<Review> getUserReviews(int userId);
+    
+    public boolean isUsernameTaken(String username) ;
 }
 

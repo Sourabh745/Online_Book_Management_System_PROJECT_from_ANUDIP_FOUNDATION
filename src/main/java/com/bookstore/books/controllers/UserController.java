@@ -32,8 +32,21 @@ public class UserController {
     public void registerUser() {
         System.out.println("Enter Username:");
         String username = scanner.nextLine();
-        System.out.println("Enter Password:");
+        
+     // Check if the username already exists
+        while (userService.isUsernameTaken(username)) {
+            System.out.println("Username already exists. Please enter a different username:");
+            username = scanner.nextLine();
+        }
+        
+        System.out.println("Enter Password:");  
+        //validation
         String password = scanner.nextLine();
+        while(password.length() <= 8) {
+        	System.out.println("Enter Password again:"); 
+        	password = scanner.nextLine();
+        }
+        
         System.out.println("Enter Name:");
         String name = scanner.nextLine();
         System.out.println("Enter Email:");
@@ -48,7 +61,7 @@ public class UserController {
         System.out.println("User registered successfully.");
     }
 
-    // Logs in a user
+    // Login a user
     public User loginUser() {
         System.out.println("Enter Username:");
         String username = scanner.nextLine();
@@ -77,7 +90,7 @@ public class UserController {
 
     // Updates the logged-in user's information
     public void updateUser(int userId) {
-        System.out.println("Enter new Name (leave blank to keep current):");
+        System.out.println("Enter new Name (leave blank to keep current):"); // just enter don't press space then enter it change the name
         String name = scanner.nextLine();
         System.out.println("Enter new Email (leave blank to keep current):");
         String email = scanner.nextLine();

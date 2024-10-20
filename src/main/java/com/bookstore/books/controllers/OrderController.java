@@ -82,7 +82,7 @@ public class OrderController {
             return;
         }
 
-        System.out.print("Enter payment method (e.g., Credit Card): ");
+        System.out.print("Enter payment method (only Cash on Delievery Now): ");
         String payMethod = scanner.nextLine();
         Payment payments = new Payment();
         payments.setPaymentMethod(payMethod);
@@ -90,17 +90,14 @@ public class OrderController {
         System.out.println("Enter order items (Enter 0 to stop):");
         List<OrderItems> orderItems = orderService.collectOrderItems();  // Collect order items from the user
 
-        System.out.println("1");
-        // Calculate total cost
+        // Calculate total cost 
         double totalCost = orderItems.stream().mapToDouble(item -> item.getPrice()).sum();
 
         // Set order status (initially pending)
         String status = "Pending";
-        System.out.println("2");
 
         // Create the order
         Orders newOrder = orderService.createOrder(loggedInUser, orderItems, payments, totalCost, status);
-        System.out.println("3");
 
         if (newOrder != null) {
             System.out.println("Order created successfully: " + newOrder);
@@ -158,16 +155,23 @@ public class OrderController {
 
         System.out.print("Enter order ID to update: ");
         int orderId = scanner.nextInt();
-        scanner.nextLine();  // Consume newline
+        scanner.nextLine(); 
 
+        //retrieve order that already exist in database
         Orders existingOrder = orderService.getOrderById(orderId);
-        if (existingOrder == null || existingOrder.getUser().getUserID() != loggedInUser.getUserID()) {
-            System.out.println("Order not found or you don't have permission to update this order.");
+        
+        if (existingOrder == null ) {
+            System.out.println("Order not found .");
             return;
         }
+        else if(existingOrder.getUser().getUserID() != loggedInUser.getUserID()) {
+        	System.out.println("you don't have permission to update this order.");
+            return;	
+        }
 
-        System.out.print("Enter updated payment method (e.g., Credit Card) or leave blank to keep current: ");
+        System.out.print("Enter updated payment method (only Cash on delievery now: ");
         String updatedPaymentMethod = scanner.nextLine();
+        
         List<Payment> payments = existingOrder.getPayments();
         if (!updatedPaymentMethod.isEmpty()) {
             Payment updatedPayment = new Payment();
@@ -184,12 +188,12 @@ public class OrderController {
         // Set updated status (optional, you can prompt for this)
         String updatedStatus = "Updated";  // Or get this from user input
 
-        Orders updatedOrder = orderService.updateOrder(orderId, updatedOrderItems, payments, updatedTotalCost, updatedStatus);
-        if (updatedOrder != null) {
-            System.out.println("Order updated successfully: " + updatedOrder);
-        } else {
-            System.out.println("Failed to update order.");
-        }
+//        Orders updatedOrder = orderService.updateOrder(orderId, updatedOrderItems, payments, updatedTotalCost, updatedStatus);
+//        if (updatedOrder != null) {
+//            System.out.println("Order updated successfully: " + updatedOrder);
+//        } else {
+//            System.out.println("Failed to update order.");
+//        }
     }
 
     // Delete Order (for the logged-in user)

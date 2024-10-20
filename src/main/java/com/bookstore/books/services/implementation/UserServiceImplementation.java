@@ -92,4 +92,9 @@ public class UserServiceImplementation implements UserService {
 		        return null;  // Authentication failed
 		    }
 
+	@Override
+	public boolean isUsernameTaken(String username) {
+		return userDAO.isUsernameTaken(username);
+	}
+
 }

@@ -19,6 +19,7 @@ import com.bookstore.books.utils.HibernateUtils;
 
 public class UserDAOImplementation implements UserDAO{
 
+	//Registering user
 	@Override
 	public User registerUser(User user) {
 		Transaction transaction = null;
@@ -35,11 +36,12 @@ public class UserDAOImplementation implements UserDAO{
         }
 		return null;
 	}
+	//====================================================================
 
 	@Override
 	public User loginUser(String username, String password) {
 		try (Session session = HibernateUtils.getSessionFactory().openSession()) {
-            Query<User> query = session.createQuery("FROM User WHERE username = :username", User.class);
+            Query<User> query = session.createQuery("from User where username = :username", User.class);
             query.setParameter("username", username);
             User user = query.uniqueResult();
 
@@ -51,7 +53,8 @@ public class UserDAOImplementation implements UserDAO{
             }
             return null;
 	}
-
+//==========================================================================
+	
 	@Override
 	public User getUserDetails(int userId) {
 		try (Session session = HibernateUtils.getSessionFactory().openSession()) {
@@ -192,35 +195,35 @@ public class UserDAOImplementation implements UserDAO{
 
 	@Override
 	public Review addReview(int bookId, User user, String reviewText, int rating) {
-		Transaction transaction = null;
+//		Transaction transaction = null;
 	    Review newReview = null;
-	    try (Session session = HibernateUtils.getSessionFactory().openSession()) {
-	        transaction = session.beginTransaction();
-	        
-	     // Fetch the Book entity based on the provided bookId
-	        Book book = session.get(Book.class, bookId);
-	        if (book == null) {
-	            throw new Exception("Book not found with id: " + bookId);
-	        }
-	        
-	        // Create a new review
-	        newReview = new Review();
-	        newReview.setBook(book);  // Assuming Review has a BookId field
-	        newReview.setUser(user);
-	        newReview.setReviewText(reviewText);
-	        newReview.setRating(rating);
-	        
-	        // Save the review
-	        session.save(newReview);
-	        
-	        // Commit the transaction
-	        transaction.commit();
-	    } catch (Exception e) {
-	        if (transaction != null) {
-	            transaction.rollback();
-	        }
-	        e.printStackTrace();
-	    }
+//	    try (Session session = HibernateUtils.getSessionFactory().openSession()) {
+//	        transaction = session.beginTransaction();
+//	        
+//	     // Fetch the Book entity based on the provided bookId
+//	        Book book = session.get(Book.class, bookId);
+//	        if (book == null) {
+//	            throw new Exception("Book not found with id: " + bookId);
+//	        }
+//	        
+//	        // Create a new review
+//	        newReview = new Review();
+//	        newReview.setBook(book);  // Assuming Review has a BookId field
+//	        newReview.setUser(user);
+//	        newReview.setReviewText(reviewText);
+//	        newReview.setRating(rating);
+//	        
+//	        // Save the review
+//	        session.save(newReview);
+//	        
+//	        // Commit the transaction
+//	        transaction.commit();
+//	    } catch (Exception e) {
+//	        if (transaction != null) {
+//	            transaction.rollback();
+//	        }
+//	        e.printStackTrace();
+//	    }
 	    return newReview;
 	}
 
@@ -272,5 +275,20 @@ public class UserDAOImplementation implements UserDAO{
         }
         return user;
     }
+
+//=======================================================================
+
+// This method check if username exist or not
+public boolean isUsernameTaken(String username) {
+    try (Session session = HibernateUtils.getSessionFactory().openSession()) {
+        Query<User> query = session.createQuery("from User where username = :username", User.class);
+        query.setParameter("username", username);
+        User user = query.uniqueResult();
+        return user != null; // Return true if a user with the same username exists
+    } catch (Exception e) {
+        e.printStackTrace(); // Handle exception or log it properly
+    }
+    return false;
+}
 
 }

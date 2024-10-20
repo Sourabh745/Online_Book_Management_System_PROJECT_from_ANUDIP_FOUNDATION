@@ -32,7 +32,7 @@ public class AdminController {
         System.out.print("Enter Admin Password: ");
         String password = scanner.nextLine();
 
-        // Validate the admin credentials (hard-coded or from a database)
+        // Validate the admin credentials 
         if ("admin".equals(username) && "admin123".equals(password)) {
             System.out.println("Admin login successful.");
             return true;
@@ -115,14 +115,14 @@ public class AdminController {
         String description = scanner.nextLine();
         System.out.print("Enter book price: ");
         double price = scanner.nextDouble();
-        scanner.nextLine();  // Consume newline
+        scanner.nextLine();  // Consme newline
 
         // Ask if the admin wants to use an existing author or create a new one
         System.out.println("Do you want to use an existing author or create a new one?");
         System.out.println("1. Use existing author");
         System.out.println("2. Create new author");
         int choice = scanner.nextInt();
-        scanner.nextLine(); // Consume newline
+        scanner.nextLine(); //  newline
 
         Author author ;
 
@@ -137,7 +137,7 @@ public class AdminController {
             // Display the list of authors
             System.out.println("Available authors:");
             for (Author a : authors) {
-                System.out.println("ID: " + a.getAuthorID() + " | Name: " + a.getName());
+                System.out.println("ID: " + a.getAuthorID() + " | Name: " + a.getName());// printing author name with its id
             }
 
             // Prompt the admin to choose an author by ID

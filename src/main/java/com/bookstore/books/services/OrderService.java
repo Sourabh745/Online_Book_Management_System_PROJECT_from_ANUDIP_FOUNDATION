@@ -20,8 +20,7 @@ public interface OrderService{
     
 	List<OrderItems> collectOrderItems();
 
-	public Orders updateOrder(int orderId, List<OrderItems> updatedOrderItems, List<Payment> payments,
-			double updatedTotalCost, String updatedStatus);
+	public Orders updateOrder(Orders order);
 
 	public Orders createOrder(User loggedInUser, List<OrderItems> orderItems, Payment payment, double totalCost,
 			String status);

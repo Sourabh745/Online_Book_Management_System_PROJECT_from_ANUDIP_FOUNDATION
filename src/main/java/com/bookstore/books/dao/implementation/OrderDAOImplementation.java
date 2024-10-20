@@ -74,6 +74,20 @@ public class OrderDAOImplementation implements OrderDAO{
 		    boolean continueAdding = true;
 
 		    while (continueAdding) {
+		    	
+		    	// Fetch and display all available books
+		        List<Book> availableBooks = bookDAO.getAllBooks();  // Fetch the list of books
+		        if (availableBooks != null && !availableBooks.isEmpty()) {
+		            System.out.println("Available books:");
+		            for (Book book : availableBooks) {
+		                System.out.println("ID: " + book.getBookId() + " | Title: " + book.getTitle() + " | Price: " + book.getPrice());
+		            }
+		        } else {
+		            System.out.println("No books available.");
+		            return orderItemsList;  // Exit if there is no books are available
+		        }
+		    	
+		        //============================================================
 		        System.out.print("Enter book ID (or 0 to finish): ");
 		        String bookId = scanner.nextLine();
 
@@ -81,11 +95,11 @@ public class OrderDAOImplementation implements OrderDAO{
 		            break;  // Exit if the user enters 0
 		        }
 
+		        //==============================================================
 		        // Fetch the book details
-		        Book book = bookDAO.getBookById(bookId);  // You need a method like this in your BookService
+		        Book book = bookDAO.getBookById(bookId);  // retrieving book data by its id
 
 		        if (book != null) {
-		        	
 		            // Create a new OrderItem
 		            OrderItems orderItem = new OrderItems();
 		            orderItem.setBook(book);
@@ -121,7 +135,7 @@ public class OrderDAOImplementation implements OrderDAO{
 	        
 	        // Retrieve the order by its ID
 	        order = session.get(Orders.class, id);
-	        if(order != null) {
+	        if(order	 != null) {
 	        	Hibernate.initialize(order.getOrderItems());
 	        	Hibernate.initialize(order.getPayments());
 	        }
@@ -192,57 +206,81 @@ public class OrderDAOImplementation implements OrderDAO{
 	}
 
 
-	@Override
-	public Orders updateOrder(int orderId, List<OrderItems> updatedOrderItems, List<Payment> payments, double updatedTotalCost, String updatedStatus) {
+//	@Override
+//	public Orders updateOrder(int orderId, List<OrderItems> updatedOrderItems, List<Payment> payments, double updatedTotalCost, String updatedStatus) {
+//	    Transaction transaction = null;
+//	    Orders order = null;
+//	    try (Session session = HibernateUtils.getSessionFactory().openSession()) {
+//	        transaction = session.beginTransaction();
+//	        
+//	        // Retrieve the order by its ID
+//	        order = session.get(Orders.class, orderId);
+//	        
+//	        if (order != null) {
+//	            // Update the order status
+//	            order.setStatus(updatedStatus);
+//	            
+//	            // Update the total cost
+//	            order.setTotalCost(updatedTotalCost);
+//	            
+//	            // Update the payments (clear old payments and add new ones)
+//	            order.getPayments().clear();
+//	            for (Payment payment : payments) {
+//	                payment.setOrder(order);  // Associate payment with the order
+//	                session.saveOrUpdate(payment);  // Save or update each payment
+//	                order.getPayments().add(payment);
+//	            }
+//	            
+//	            // Update the order items (clear old items and add new ones)
+//	            order.getOrderItems().clear();
+//	            for (OrderItems item : updatedOrderItems) {
+//	                item.setOrder(order);  // Associate each updated item with the order
+//	                session.saveOrUpdate(item);  // Save or update each order item
+//	                order.getOrderItems().add(item);
+//	            }
+//	            
+//	            // Save the updated order
+//	            session.saveOrUpdate(order);
+//	            
+//	            // Commit the transaction
+//	            transaction.commit();
+//	            return order;  // Return the updated order
+//	        } else {
+//	            System.out.println("Order not found.");
+//	        }
+//	    } catch (Exception e) {
+//	        if (transaction != null) {
+//	            transaction.rollback();
+//	        }
+//	        e.printStackTrace();
+//	        throw new RuntimeException("Failed to update  in order: " + e.getMessage());
+//	    }
+//        return order;  // Return the updated order
+//
+//	}
+//
+	
+public Orders updateOrder(Orders order) {
 	    Transaction transaction = null;
-	    Orders order = null;
 	    try (Session session = HibernateUtils.getSessionFactory().openSession()) {
 	        transaction = session.beginTransaction();
 	        
-	        // Retrieve the order by its ID
-	        order = session.get(Orders.class, orderId);
-	        
-	        if (order != null) {
-	            // Update the order status
-	            order.setStatus(updatedStatus);
-	            
-	            // Update the total cost
-	            order.setTotalCost(updatedTotalCost);
-	            
-	            // Update the payments (clear old payments and add new ones)
-	            order.getPayments().clear();
-	            for (Payment payment : payments) {
-	                payment.setOrder(order);  // Associate payment with the order
-	                session.saveOrUpdate(payment);  // Save or update each payment
-	                order.getPayments().add(payment);
-	            }
-	            
-	            // Update the order items (clear old items and add new ones)
-	            order.getOrderItems().clear();
-	            for (OrderItems item : updatedOrderItems) {
-	                item.setOrder(order);  // Associate each updated item with the order
-	                session.saveOrUpdate(item);  // Save or update each order item
-	                order.getOrderItems().add(item);
-	            }
-	            
-	            // Save the updated order
-	            session.saveOrUpdate(order);
-	            
-	            // Commit the transaction
-	            transaction.commit();
-	            return order;  // Return the updated order
-	        } else {
-	            System.out.println("Order not found.");
-	        }
+	        // Ensure collection is initialized before updating the order
+	        Hibernate.initialize(order.getPayments());
+
+	        // Update the order
+	        session.update(order);
+
+	        // Commit the transaction
+	        transaction.commit();
+	        return order;
 	    } catch (Exception e) {
 	        if (transaction != null) {
 	            transaction.rollback();
 	        }
 	        e.printStackTrace();
-	        throw new RuntimeException("Failed to update  in order: " + e.getMessage());
 	    }
-        return order;  // Return the updated order
-
+	    return null;
 	}
 
 
@@ -277,7 +315,6 @@ public class OrderDAOImplementation implements OrderDAO{
 	        }
 	        e.printStackTrace();
 	        throw new RuntimeException("Failed to delete item in order: " + e.getMessage());
-
 	    }
 	}
 

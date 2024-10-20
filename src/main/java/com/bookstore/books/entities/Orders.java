@@ -28,7 +28,6 @@ public class Orders {
     private String status;
     
     @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
-    //@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItems> orderItems;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)

@@ -52,10 +52,9 @@ public class OrderServiceImplementation implements OrderService{
 	}
 
 	@Override
-	public Orders updateOrder(int orderId, List<OrderItems> updatedOrderItems, List<Payment> payments,
-			double updatedTotalCost, String updatedStatus) {
+	public Orders updateOrder(Orders order) {
 		// TODO Auto-generated method stub
-		return orderDAO.updateOrder(orderId, updatedOrderItems, payments,updatedTotalCost, updatedStatus);
+		return orderDAO.updateOrder(order);
 	}
 
 	@Override
@@ -68,7 +67,7 @@ public class OrderServiceImplementation implements OrderService{
 	@Override
 	public Orders createOrders(User user, List<OrderItems> orderItems, Payment payment) {
 		// TODO Auto-generated method stub
-		return orderDAO.createOrder(user, orderItems, payment);
+		return orderDAO.createOrders(user, orderItems, payment);
 	}
 
 }

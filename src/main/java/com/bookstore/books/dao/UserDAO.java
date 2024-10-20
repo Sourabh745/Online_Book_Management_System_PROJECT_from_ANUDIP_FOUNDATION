@@ -38,5 +38,7 @@ public interface UserDAO {
     public List<Review> getUserReviews(int userId);
     
 	public User getUserByUsernameAndPassword(String username, String password);
+	
+	public boolean isUsernameTaken(String username);
 
 }
