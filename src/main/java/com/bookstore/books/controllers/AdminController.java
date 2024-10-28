@@ -1,4 +1,5 @@
 package com.bookstore.books.controllers;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -42,7 +43,7 @@ public class AdminController {
         }
     }
 
-    
+    //Main menu
     public void showMenu() {
         while (true) {
         	System.out.println("============================================");
@@ -118,7 +119,7 @@ public class AdminController {
         scanner.nextLine();  // Consme newline
 
         // Ask if the admin wants to use an existing author or create a new one
-        System.out.println("Do you want to use an existing author or create a new one?");
+        System.out.println("Do you want to use an existing author or create a new one");
         System.out.println("1. Use existing author");
         System.out.println("2. Create new author");
         int choice = scanner.nextInt();
@@ -241,6 +242,9 @@ public class AdminController {
 
     // Delete Book
     private void deleteBook() {
+    	try {
+        System.out.print("View book ID to delete: ");
+    	viewAllBooks();
         System.out.print("Enter book ID to delete: ");
         String bookId = scanner.nextLine();
 
@@ -249,6 +253,10 @@ public class AdminController {
             System.out.println("Book deleted successfully.");
         } else {
             System.out.println("Failed to delete book.");
+        }
+    	}catch (InputMismatchException e) {
+            System.out.println("Invalid input. Please enter a valid user ID.");
+            scanner.nextLine();  // Clear invalid input
         }
     }
 
@@ -295,20 +303,26 @@ public class AdminController {
 
     // View User by ID
     private void viewUserById() {
+    	try {
         System.out.print("Enter user ID: ");
         int userId = scanner.nextInt();
         scanner.nextLine();  // Consume newline
-
+    	
         User user = adminService.getUserById(userId);
         if (user != null) {
             System.out.println("User details: " + user);
         } else {
             System.out.println("User not found.");
         }
+    	}catch (InputMismatchException e) {
+            System.out.println("Invalid input. Please enter a valid user ID.");
+            scanner.nextLine();  // Clear invalid input
+        }
     }
 
     // Delete User
     private void deleteUser() {
+    	try {
         System.out.print("Enter user ID to delete: ");
         int userId = scanner.nextInt();
         scanner.nextLine();  // Consume newline
@@ -318,6 +332,10 @@ public class AdminController {
             System.out.println("User deleted successfully.");
         } else {
             System.out.println("Failed to delete user.");
+        }
+    	}catch (InputMismatchException e) {
+            System.out.println("Invalid input. Please enter a valid user ID.");
+            scanner.nextLine();  // Clear invalid input
         }
     }
 
@@ -336,6 +354,7 @@ public class AdminController {
 
     // View Order by ID
     private void viewOrderById() {
+    	try {
         System.out.print("Enter order ID: ");
         int orderId = scanner.nextInt();
         scanner.nextLine();  // Consume newline
@@ -345,6 +364,10 @@ public class AdminController {
             System.out.println("Order details: " + order);
         } else {
             System.out.println("Order not found.");
+        }
+    	}catch (InputMismatchException e) {
+            System.out.println("Invalid input. Please enter a valid user ID.");
+            scanner.nextLine();  // Clear invalid input
         }
     }
 }
