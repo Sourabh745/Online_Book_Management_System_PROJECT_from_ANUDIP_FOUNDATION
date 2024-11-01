@@ -145,9 +145,8 @@ public class Book {
 
 	@Override
 	public String toString() {
-		return "Book [bookId=" + bookId + ", title=" + title + ", author=" + (author != null ? author.getName() : "N/A") + ", description=" + description
-				+ ", publicationDate=" + publicationDate + ", price=" + price + ", quantity=" + quantity
-				+ "]";
+		return " bookId = " + bookId + ", \n title = " + title + ", \n author = " + (author != null ? author.getName() : "N/A") + ", \n description = " + description
+				+ ", \n publicationDate = " + publicationDate + ", \n price = " + price + ", \n quantity = " + quantity + "\n===============================\n";
 	}
 
     
