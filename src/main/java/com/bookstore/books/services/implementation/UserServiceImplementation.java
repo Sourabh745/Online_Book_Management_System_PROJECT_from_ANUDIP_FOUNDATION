@@ -70,12 +70,6 @@ public class UserServiceImplementation implements UserService {
 	}
 
 	@Override
-	public Review addReview(int bookId, User user, String reviewText, int rating) {
-		// TODO Auto-generated method stub
-		return userDAO.addReview(bookId, user, reviewText, rating);
-	}
-
-	@Override
 	public List<Review> getUserReviews(int userId) {
 		// TODO Auto-generated method stub
 		return userDAO.getUserReviews(userId);

@@ -1,6 +1,5 @@
 package com.bookstore.books;
 
-import com.bookstore.books.controllers.*;
 import com.bookstore.books.entities.User;
 
 public class App {
@@ -10,7 +9,6 @@ public class App {
 
     public App() {
         // Initialize controllers and menus
-        
         this.welcomeMenu = new WelcomeMenu();
         this.userMenu = new UserMenu();
     }
@@ -24,8 +22,9 @@ public class App {
         while (true) {
             if (loggedInUser == null) {
                 loggedInUser = welcomeMenu.showWelcomeMenu();
-            } else {
-                boolean isLoggedOut = userMenu.showUserMenu(loggedInUser);
+            } 
+            else {
+                boolean isLoggedOut = true;//userMenu.showUserMenu(loggedInUser);
                 if (isLoggedOut) {
                     loggedInUser = null; // User has logged out
                 }

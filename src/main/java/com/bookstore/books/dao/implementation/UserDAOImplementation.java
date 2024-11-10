@@ -71,6 +71,8 @@ public class UserDAOImplementation implements UserDAO{
 	    }
 	}
 
+//==========================================================================
+	
 	@SuppressWarnings("deprecation")
 	@Override
 	public void updateUser(int userId, User updatedUser) {
@@ -86,6 +88,8 @@ public class UserDAOImplementation implements UserDAO{
             e.printStackTrace();
         }
 	}
+
+//==========================================================================
 
 	@Override
 	public boolean deleteAccount(int userId) {
@@ -106,6 +110,8 @@ public class UserDAOImplementation implements UserDAO{
 	    }
 	    return false;
 	}
+	
+//==========================================================================
 
 	@Override
 	public List<Orders> viewOrderHistory(int userId) {
@@ -129,6 +135,8 @@ public class UserDAOImplementation implements UserDAO{
         }
 		return orders;
 	}
+
+//==========================================================================
 
 	@Override
 	public Orders placeOrder(User user, List<OrderItems> orderItems, Payment payment) {
@@ -192,40 +200,6 @@ public class UserDAOImplementation implements UserDAO{
 	    }
 	    return order;
 	    }
-
-	@Override
-	public Review addReview(int bookId, User user, String reviewText, int rating) {
-//		Transaction transaction = null;
-	    Review newReview = null;
-//	    try (Session session = HibernateUtils.getSessionFactory().openSession()) {
-//	        transaction = session.beginTransaction();
-//	        
-//	     // Fetch the Book entity based on the provided bookId
-//	        Book book = session.get(Book.class, bookId);
-//	        if (book == null) {
-//	            throw new Exception("Book not found with id: " + bookId);
-//	        }
-//	        
-//	        // Create a new review
-//	        newReview = new Review();
-//	        newReview.setBook(book);  // Assuming Review has a BookId field
-//	        newReview.setUser(user);
-//	        newReview.setReviewText(reviewText);
-//	        newReview.setRating(rating);
-//	        
-//	        // Save the review
-//	        session.save(newReview);
-//	        
-//	        // Commit the transaction
-//	        transaction.commit();
-//	    } catch (Exception e) {
-//	        if (transaction != null) {
-//	            transaction.rollback();
-//	        }
-//	        e.printStackTrace();
-//	    }
-	    return newReview;
-	}
 
 	@Override
 	public List<Review> getUserReviews(int userId) {

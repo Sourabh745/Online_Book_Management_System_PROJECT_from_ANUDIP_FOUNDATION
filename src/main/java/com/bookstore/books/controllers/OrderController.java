@@ -84,7 +84,7 @@ public class OrderController {
 
         System.out.print("Enter payment method (only Cash on Delievery Now): ");
         String payMethod = scanner.nextLine();
-        Payment payments = new Payment();
+        Payment payments  = new Payment();
         payments.setPaymentMethod(payMethod);
 
         System.out.println("Enter order items (Enter 0 to stop):");
@@ -203,16 +203,31 @@ public class OrderController {
             return;
         }
 
-        System.out.print("Enter order ID to delete: ");
+        // Step 1: Fetch and display all orders for the logged-in user
+        List<Orders> userOrders = orderService.getOrdersByUser(loggedInUser.getUserID());
+        if (userOrders.isEmpty()) {
+            System.out.println("You have no orders to delete.");
+            return;
+        }
+
+        System.out.println("Your Orders:");
+        for (Orders order : userOrders) {
+            System.out.println("Order ID: " + order.getOrderID() + ", Total: " + order.getTotalCost() + ", Date: " + order.getOrderDate());
+        }
+
+        // Step 2: Prompt the user to select an order to delete
+        System.out.print("Enter the order ID to delete: ");
         int orderId = scanner.nextInt();
         scanner.nextLine();  // Consume newline
 
+        // Step 3: Check if the order belongs to the user
         Orders orderToDelete = orderService.getOrderById(orderId);
         if (orderToDelete == null || orderToDelete.getUser().getUserID() != loggedInUser.getUserID()) {
             System.out.println("Order not found or you don't have permission to delete this order.");
             return;
         }
 
+        // Step 4: Delete the order
         boolean success = orderService.deleteOrder(orderId);
         if (success) {
             System.out.println("Order deleted successfully.");
@@ -220,4 +235,5 @@ public class OrderController {
             System.out.println("Failed to delete order.");
         }
     }
+
 }

@@ -33,9 +33,6 @@ public interface UserService  {
     
     // Allows the user to view details of a specific order they placed
     public Orders viewOrderDetails(int orderId) ;
-
-    // Allows the user to add a review for a book and returns the created Review object
-    public Review addReview(int bookId, User user, String reviewText, int rating);
     
     // Retrieves all reviews written by the user
     public List<Review> getUserReviews(int userId);

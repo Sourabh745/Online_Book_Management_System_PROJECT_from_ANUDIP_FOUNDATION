@@ -8,14 +8,17 @@ import com.bookstore.books.entities.User;
 public class WelcomeMenu {
     private UserController userController;
     private AdminController adminController;
+    private UserMenu userMenu;
     private Scanner scanner;
 
     public WelcomeMenu() {
         this.userController = new UserController() ;
         this.adminController = new AdminController();
+        this.userMenu = new UserMenu();
         this.scanner = new Scanner(System.in);
     }
 
+    //Login and Sign up page
     public User showWelcomeMenu() {
         System.out.println("Welcome to the Online Bookstore!");
         System.out.println("1. Register");
@@ -32,7 +35,9 @@ public class WelcomeMenu {
                 userController.registerUser();
                 break;
             case 2:
-                return userController.loginUser();
+                User user = userController.loginUser();
+                userMenu.showUserMenu(user);
+                break;
             case 3:
                 if (adminController.adminLogin()) {
                     adminController.showMenu();
